@@ -47,6 +47,21 @@ guardado: o original é apagado assim que é processado e o tarjado, em até
     `entrada/` e grava em `saida/`.
 - Outras tarefas (**Tasks: Run Task**): **Front: lint**, **Front: build (gera web/dist)**.
 
+## Docker (deploy)
+
+A aplicação inteira roda num container: a imagem compila a tela e sobe a API
+com o servidor de produção (Waitress). Não precisa de Node nem Python na máquina.
+
+```bash
+docker compose up -d --build     # abra http://localhost:8080
+docker compose logs -f
+docker compose down
+```
+
+Detalhes para a TI (variáveis, HTTPS, recursos, atualização):
+[docs/wiki/Implantacao-com-Docker.md](docs/wiki/Implantacao-com-Docker.md).
+A documentação completa do projeto está em [docs/wiki](docs/wiki/Home.md).
+
 ## Uso sem o VS Code
 
 Quem só vai usar a ferramenta não precisa de Node, só do `web/dist` já compilado:
@@ -66,7 +81,7 @@ e abra **http://127.0.0.1:5000**. A API só aceita conexões desta máquina.
 | `web/src/pages/Home` | a tela: envio quando não há lote, conferência quando há |
 | `web/src/components/Redator` | `PainelEnvio`, `ChecklistTipos`, `OpcaoChave`, `PainelRevisao`, `ArquivoRevisao`, `PendenciasArquivo`, `PaginaPreview` |
 | `web/src/components/Cabecalho` | marca e troca de tema claro/escuro |
-| `web/src/hooks/useLote.ts` | envia o lote e consulta o andamento a cada 1 s |
+| `web/src/contexts/LotesContext` | envia os lotes, consulta o andamento a cada 1 s, aprovações, histórico e tarja à mão |
 | `web/src/services/RedatorService` | chamadas à API e tipos do contrato |
 | `web/src/ui` | componentes do design system (`componentes-react-dafn`) |
 

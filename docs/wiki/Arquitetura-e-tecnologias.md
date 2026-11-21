@@ -37,6 +37,7 @@ Em desenvolvimento, a tela roda no Vite (porta 5173) e repassa as chamadas `/api
 | **OpenCV** (vem com o RapidOCR) | Detectar e decodificar QR Code e código de barras | Leitores prontos e confiáveis; já é dependência do OCR. |
 | **NumPy** | Converter a página renderizada em imagem para o OCR e o OpenCV | Padrão para imagem em Python. |
 | **Flask** | API HTTP | Pequeno e suficiente para meia dúzia de rotas; sem banco, sem ORM. |
+| **Waitress** | Servidor HTTP de produção | Puro Python, roda igual no Windows e no Linux, e atende várias requisições com threads num processo só (a fila fica na memória desse processo). |
 | **Biblioteca padrão** | Fila (`threading`), paralelismo (`concurrent.futures`, processos), pastas temporárias (`tempfile`) | Sem infraestrutura extra (Redis, Celery, banco). |
 
 Dependências em `requirements.txt`. O `--ignore-requires-python` na instalação é porque o RapidOCR declara suporte só até o Python 3.12, mas funciona nos mais novos.
@@ -55,13 +56,23 @@ Dependências em `requirements.txt`. O `--ignore-requires-python` na instalaçã
 | **React Router** e **react-helmet-async** | Rotas e título da aba | |
 | **Font Awesome** | Ícones | Já usado pelo design system. |
 
+### Empacotamento
+
+| Tecnologia | Para quê | Por que ela |
+|---|---|---|
+| **Docker** (imagem em dois estágios) | Rodar tela e API num container só, para o deploy | Um artefato só para a TI, igual em qualquer servidor. Detalhes em [Implantação com Docker](Implantacao-com-Docker.md). |
+| **tini** | Processo inicial do container | Repassa o sinal de parada e recolhe os processos de OCR encerrados. |
+| **OpenCV headless** | O mesmo OpenCV, sem interface gráfica | No servidor não há tela: a imagem fica uns 500 MB menor. |
+
 ## Como a API organiza o trabalho
 
 - **Estado em memória.** Os lotes ficam num dicionário em memória (`LOTES`). Não há banco de dados: reiniciar a API perde os lotes em andamento, de propósito.
 - **Pasta temporária.** Ao subir, a API cria `%TEMP%\redator_lgpd_<aleatório>`, com uma subpasta por lote. Ao encerrar normalmente, apaga tudo.
 - **Uma thread agendadora.** Escolhe o próximo arquivo de todos os lotes pendentes: menos páginas primeiro, descontando 10 páginas por minuto de espera. Processa um arquivo por vez; o paralelismo fica dentro do motor (páginas em paralelo).
 - **Cancelamento.** Um `threading.Event` por lote. O motor o consulta 4 vezes por segundo e, quando ligado, encerra os processos de OCR. O agendador então apaga a pasta do lote.
-- **Prazo.** O lote concluído fica disponível por 30 minutos, contados de quando ficou pronto. Ver a ressalva em [Limitações](Limitacoes-e-proximos-passos.md#limpeza-dos-lotes-expirados).
+- **Prazo.** O lote concluído fica disponível por 30 minutos, contados de quando ficou pronto. Uma thread verifica os lotes expirados a cada minuto e os apaga.
+- **Servidor HTTP.** Em desenvolvimento, o servidor do Flask. Em produção (`--producao` ou `TARJADOR_PRODUCAO=1`, o padrão no Docker), o **Waitress**, com várias threads atendendo as requisições num **processo só**: a fila e os lotes ficam na memória desse processo.
+- **Encerramento.** No SIGTERM (`docker stop`), a API sai normalmente e apaga a pasta temporária.
 - **Tarja à mão.** Uma trava garante uma edição por vez. O PDF é regravado numa cópia (`*.editando.pdf`) e trocado pelo original de forma atômica. A `versao` do arquivo aumenta, e a tela usa isso para buscar a imagem nova da página em vez da que está em cache.
 
 ## Como a tela acompanha

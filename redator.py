@@ -55,6 +55,13 @@ if sys.version_info < (3, 10):
     sys.exit("Este script precisa de Python 3.10 ou mais novo "
              f"(voce esta usando {sys.version.split()[0]}).")
 
+# O ONNX Runtime (motor do OCR) traz um coletor de telemetria da Microsoft
+# (OneCollector, mobile.events.data.microsoft.com). Os documentos tem dado
+# pessoal e o Tarjador nao abre conexao para fora: desliga antes de o modulo
+# ser carregado. Vale para este processo e para os processos de OCR, que
+# herdam o ambiente e importam este modulo.
+os.environ["ORT_DISABLE_TELEMETRY"] = "1"
+
 try:
     import pymupdf  # PyMuPDF >= 1.24
 except ImportError:  # pragma: no cover
@@ -849,6 +856,14 @@ def obter_motor_ocr(preferencia: str = "auto", threads: int = 0):
         return _MOTOR_OCR, _MOTOR_NOME
 
     erros = []
+    # Reforco da variavel ORT_DISABLE_TELEMETRY (ver o inicio do modulo)
+    try:
+        import onnxruntime  # type: ignore
+        if hasattr(onnxruntime, "disable_telemetry_events"):
+            onnxruntime.disable_telemetry_events()
+    except Exception:  # noqa: BLE001 - sem onnxruntime, o erro aparece logo abaixo
+        pass
+
     if preferencia in ("auto", "rapidocr"):
         # rapidocr-onnxruntime (1.x) - o recomendado
         try:
@@ -1968,10 +1983,11 @@ def montar_config(a) -> Config:
     )
 
 
-def definir_paralelismo(cfg: Config, processos: int = 0) -> int:
+def definir_paralelismo(cfg: Config, processos: int = 0, nucleos: int = 0) -> int:
     """processos=0 escolhe sozinho (metade dos nucleos, ate 4) e reparte as
-    threads do OCR entre eles."""
-    nucleos = os.cpu_count() or 2
+    threads do OCR entre eles. nucleos=0 usa os da maquina; num container com
+    limite de CPU, quem chama deve passar o limite (os.cpu_count ve o host)."""
+    nucleos = nucleos if nucleos > 0 else (os.cpu_count() or 2)
     processos = processos if processos > 0 else max(1, min(4, nucleos // 2))
     if processos > 1:
         cfg.threads_ocr = max(1, nucleos // processos)

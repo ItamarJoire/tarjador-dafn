@@ -2,7 +2,7 @@
 
 API HTTP em Flask (`api.py`). Todas as rotas ficam sob `/api`; as demais servem a tela compilada (`web/dist`). Erros voltam como JSON `{ "erro": "mensagem em português" }`.
 
-Hoje a API escuta só em `127.0.0.1` (porta 5000 por padrão, ou `--porta`). Ver [Implantação na intranet](Implantacao-na-intranet.md).
+Rodando direto, a API escuta só em `127.0.0.1` (porta 5000 por padrão; `--host` e `--porta` mudam). No Docker, escuta em todas as interfaces do container, na porta 5000, publicada na 8080 pelo `compose.yaml`. Ver [Implantação com Docker](Implantacao-com-Docker.md).
 
 ## Rotas
 

@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-api.py - API local do Tarjador (Flask).
+api.py - API do Tarjador (Flask).
 
-Liga o front-end React ao redator.py. Roda so em 127.0.0.1: nenhum outro
-computador da rede consegue acessar, e nenhum PDF sai da maquina.
+Liga o front-end React ao redator.py. Por padrao roda so em 127.0.0.1: nenhum
+outro computador da rede consegue acessar, e nenhum PDF sai da maquina.
 
-    python api.py                 # sobe em http://127.0.0.1:5000
+    python api.py                 # sobe em http://127.0.0.1:5000 (desenvolvimento)
     python api.py --porta 5050
+    python api.py --host 0.0.0.0 --producao   # servidor (Waitress); e o que o Docker roda
+
+As opcoes tambem vem de variaveis de ambiente (TARJADOR_HOST, TARJADOR_PORTA,
+TARJADOR_PASTA_TEMP, TARJADOR_PRODUCAO, TARJADOR_THREADS): ver --help.
+TARJADOR_NUCLEOS fixa quantos nucleos o tarjamento usa (padrao: o limite de CPU
+do container, ou os da maquina).
 
 Se a pasta web/dist existir (front ja compilado com `npm run build`), a propria
 API serve a tela - ai basta abrir http://127.0.0.1:5000 no navegador.
@@ -36,6 +42,7 @@ import atexit
 import contextlib
 import os
 import shutil
+import signal
 import sys
 import tempfile
 import threading
@@ -206,6 +213,44 @@ def _prioridade(lote: Lote, arq: Arquivo, agora: float) -> tuple:
     return (arq.paginas_total - PESO_DA_ESPERA * espera_min, lote.criado_em, arq.indice)
 
 
+def nucleos_disponiveis() -> int:
+    """Nucleos que o tarjamento pode usar.
+
+    TARJADOR_NUCLEOS manda, se definido. Senao, num container com limite de
+    CPU (cgroup v2, ex.: docker --cpus=2), usa o limite: os.cpu_count() enxerga
+    os nucleos do servidor inteiro e o OCR abriria processos demais. Fora de
+    container, os nucleos que este processo pode usar.
+    """
+    definido = os.environ.get("TARJADOR_NUCLEOS", "").strip()
+    if definido.isdigit() and int(definido) > 0:
+        return int(definido)
+    maquina = (os.process_cpu_count() if hasattr(os, "process_cpu_count") else None) \
+        or os.cpu_count() or 2
+    cota, periodo = _cota_de_cpu()
+    if cota > 0 and periodo > 0:
+        return max(1, min(maquina, -(-cota // periodo)))   # arredonda para cima
+    return maquina
+
+
+def _cota_de_cpu() -> tuple[int, int]:
+    """Limite de CPU do container (cota, periodo), ou (0, 0) se nao houver.
+    cgroup v2 (cpu.max) e v1 (cpu.cfs_quota_us; o Docker Desktop usa este)."""
+    try:
+        cota, periodo = Path("/sys/fs/cgroup/cpu.max").read_text().split()[:2]
+        return (0, 0) if cota == "max" else (int(cota), int(periodo))
+    except (OSError, ValueError):
+        pass
+    try:
+        cota = int(Path("/sys/fs/cgroup/cpu/cpu.cfs_quota_us").read_text())
+        periodo = int(Path("/sys/fs/cgroup/cpu/cpu.cfs_period_us").read_text())
+        return (cota, periodo) if cota > 0 else (0, 0)   # -1 = sem limite
+    except (OSError, ValueError):
+        return (0, 0)
+
+
+NUCLEOS = nucleos_disponiveis()
+
+
 def _proximo_arquivo() -> Optional[tuple[Lote, Arquivo]]:
     """Escolhe e marca o proximo arquivo a tarjar. Chamar com a TRAVA."""
     agora = time.time()
@@ -266,7 +311,7 @@ def _processar_arquivo(lote: Lote, arq: Arquivo) -> None:
     sao mortos) e o agendador apaga o lote em seguida."""
     cfg = R.Config(tipos=set(lote.tipos), ocr=not lote.sem_ocr,
                    agressivo=lote.agressivo)
-    processos = R.definir_paralelismo(cfg)
+    processos = R.definir_paralelismo(cfg, nucleos=NUCLEOS)
     try:
         if cfg.ocr:
             try:
@@ -618,23 +663,80 @@ def front(caminho: str = ""):
 # ---------------------------------------------------------------------------
 
 
+INTERVALO_DA_LIMPEZA = 60   # segundos entre uma verificacao de lotes expirados e outra
+
+
+def faxineiro() -> None:
+    """Apaga os lotes expirados de tempos em tempos. Sem isto, a verificacao
+    so rodava a cada novo envio: sem envios, o tarjado ficava no disco."""
+    while True:
+        time.sleep(INTERVALO_DA_LIMPEZA)
+        try:
+            limpar_lotes_antigos()
+        except Exception as e:  # noqa: BLE001 - a limpeza nao pode parar de rodar
+            print(f"AVISO: falha na limpeza de lotes expirados: {e}", flush=True)
+
+
+def _encerrar_com_sinal(numero, _quadro) -> None:
+    """SIGTERM (docker stop, servico do sistema) vira um encerramento normal,
+    para o atexit apagar a pasta temporaria. Sem isto, o processo morre sem
+    limpar - e, como PID 1 de um container, nem morreria."""
+    raise SystemExit(128 + numero)
+
+
 def main() -> None:
     global PASTA_BASE
-    ap = argparse.ArgumentParser(description="API local do Tarjador")
-    ap.add_argument("--porta", type=int, default=5000)
+    env = os.environ.get
+    ap = argparse.ArgumentParser(
+        description="API do Tarjador. Cada opcao tambem pode vir de uma variavel de ambiente.")
+    ap.add_argument("--host", default=env("TARJADOR_HOST", "127.0.0.1"),
+                    help="endereco em que escuta (TARJADOR_HOST; padrao 127.0.0.1, so esta "
+                         "maquina; 0.0.0.0 no container)")
+    ap.add_argument("--porta", type=int, default=int(env("TARJADOR_PORTA", "5000")),
+                    help="porta (TARJADOR_PORTA; padrao 5000)")
+    ap.add_argument("--pasta-temp", default=env("TARJADOR_PASTA_TEMP") or None,
+                    help="onde criar a pasta temporaria dos lotes (TARJADOR_PASTA_TEMP; "
+                         "padrao: a do sistema)")
+    ap.add_argument("--producao", action="store_true",
+                    default=env("TARJADOR_PRODUCAO", "").lower() in ("1", "true", "sim"),
+                    help="servidor de producao (Waitress) no lugar do servidor de "
+                         "desenvolvimento do Flask (TARJADOR_PRODUCAO=1)")
+    ap.add_argument("--threads", type=int, default=int(env("TARJADOR_THREADS", "8")),
+                    help="threads do Waitress para atender requisicoes (TARJADOR_THREADS; "
+                         "padrao 8). O tarjamento em si roda na fila, um arquivo por vez")
     a = ap.parse_args()
 
-    PASTA_BASE = Path(tempfile.mkdtemp(prefix="redator_lgpd_"))
+    if a.pasta_temp:
+        Path(a.pasta_temp).mkdir(parents=True, exist_ok=True)
+    PASTA_BASE = Path(tempfile.mkdtemp(prefix="redator_lgpd_", dir=a.pasta_temp))
     atexit.register(shutil.rmtree, PASTA_BASE, ignore_errors=True)
+    signal.signal(signal.SIGTERM, _encerrar_com_sinal)
     threading.Thread(target=agendador, name="agendador", daemon=True).start()
+    threading.Thread(target=faxineiro, name="faxineiro", daemon=True).start()
 
-    print(f"Tarjador {R.VERSAO} - API em http://127.0.0.1:{a.porta}")
+    endereco = "127.0.0.1" if a.host in ("0.0.0.0", "::") else a.host
+    print(f"Tarjador {R.VERSAO} - API em http://{endereco}:{a.porta}"
+          f"{' (escutando em todas as interfaces)' if endereco != a.host else ''}")
     if WEB_DIST.exists():
-        print(f"Abra http://127.0.0.1:{a.porta} no navegador.")
+        print(f"Abra http://{endereco}:{a.porta} no navegador.")
     else:
         print("Front nao compilado: rode 'npm run dev' na pasta web e abra http://localhost:5173")
+    print(f"Nucleos para o tarjamento: {NUCLEOS}. "
+          f"Servidor: {'Waitress (producao)' if a.producao else 'Flask (desenvolvimento)'}.")
     print("Ctrl+C encerra (os arquivos temporarios sao apagados).", flush=True)
-    app.run(host="127.0.0.1", port=a.porta, threaded=True, debug=False, use_reloader=False)
+
+    if a.producao:
+        try:
+            from waitress import serve
+        except ImportError:
+            sys.exit("Faltou o Waitress. Rode:  pip install -r requirements.txt")
+        # Um processo so: os lotes e a fila ficam na memoria dele. As threads
+        # atendem as requisicoes (envio, consulta, download) em paralelo.
+        serve(app, host=a.host, port=a.porta, threads=a.threads,
+              max_request_body_size=TAMANHO_MAXIMO + 16 * 1024 * 1024,
+              ident="Tarjador")
+    else:
+        app.run(host=a.host, port=a.porta, threaded=True, debug=False, use_reloader=False)
 
 
 if __name__ == "__main__":

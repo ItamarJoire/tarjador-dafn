@@ -1,0 +1,24 @@
+# Só o necessário vai para o build. PDFs NUNCA entram na imagem: têm dado pessoal.
+*.pdf
+entrada/
+saida/
+saida_tarjada/
+.env
+*.log
+
+# Ambiente e ferramentas locais
+.git/
+.venv/
+.vscode/
+__pycache__/
+*.pyc
+
+# Front: as dependências e o build são refeitos dentro da imagem
+web/node_modules/
+web/dist/
+
+# Documentação e arquivos do Docker não fazem parte da aplicação
+docs/
+Dockerfile
+compose.yaml
+.dockerignore

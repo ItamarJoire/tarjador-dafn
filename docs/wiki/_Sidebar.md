@@ -15,5 +15,6 @@
 **Operação**
 
 - [Desenvolvimento](Desenvolvimento.md)
+- [Implantação com Docker](Implantacao-com-Docker.md)
 - [Implantação na intranet](Implantacao-na-intranet.md)
 - [Limitações e próximos passos](Limitacoes-e-proximos-passos.md)

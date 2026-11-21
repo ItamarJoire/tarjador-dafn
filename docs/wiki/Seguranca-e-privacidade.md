@@ -5,10 +5,10 @@
 | Dado | Onde fica | Por quanto tempo |
 |---|---|---|
 | PDF original | Pasta temporária da API | Apagado assim que o arquivo é processado (com ou sem erro) |
-| PDF tarjado | Pasta temporária da API | Até ser baixado e concluído, o lote ser apagado ou cancelado, ou expirar (30 min depois de pronto; ver [ressalva](Limitacoes-e-proximos-passos.md#limpeza-dos-lotes-expirados)) |
+| PDF tarjado | Pasta temporária da API | Até ser baixado e concluído, o lote ser apagado ou cancelado, ou expirar (30 min depois de pronto; verificado a cada minuto) |
 | Imagens das páginas na conferência | Geradas na hora a partir do **tarjado**, nunca do original; o navegador guarda em cache por até 10 minutos | — |
 | Estado dos lotes | Memória da API | Até expirar ou a API ser encerrada |
-| Pasta temporária inteira | `%TEMP%\redator_lgpd_*` | Apagada ao encerrar a API normalmente (Ctrl+C) |
+| Pasta temporária inteira | `%TEMP%\redator_lgpd_*` | Apagada ao encerrar a API normalmente (Ctrl+C ou `docker stop`); no Docker fica em `/tmp/tarjador`, dentro do container, e some também com ele |
 | Histórico de concluídos | `localStorage` do navegador: nome do arquivo, páginas, número de tarjas e tipos | Até "Limpar lista" |
 
 Não há banco de dados, log com conteúdo de documento nem cópia em outro lugar. A API nunca devolve o valor inteiro de um dado encontrado: na conferência ele vem mascarado.
@@ -17,7 +17,8 @@ Não há banco de dados, log com conteúdo de documento nem cópia em outro luga
 
 ## Proteções da API
 
-- **Só aceita conexões da própria máquina** (`127.0.0.1`), na versão atual.
+- **Sem conexão para fora.** Nenhuma parte do Tarjador chama serviço externo. O ONNX Runtime (motor do OCR) traz um coletor de telemetria da Microsoft; ele é desligado no início do `redator.py` (`ORT_DISABLE_TELEMETRY=1` e `disable_telemetry_events()`) e na imagem Docker.
+- **Endereço em que escuta:** só a própria máquina (`127.0.0.1`) por padrão; no Docker, todas as interfaces do container, com o servidor web do órgão na frente.
 - **Só PDF:** confere a extensão e a assinatura `%PDF-` antes de gravar. Os nomes são saneados (`secure_filename`).
 - **Limite de 500 MB** por envio.
 - **Checklist validado:** um checklist vazio é recusado, para não entregar um PDF "tarjado" sem nenhuma tarja.

@@ -2,14 +2,6 @@
 
 O que já se sabe que não está resolvido, em ordem de importância.
 
-## Limpeza dos lotes expirados
-
-A tela e o FAQ dizem que o PDF tarjado é apagado 30 minutos depois de pronto. No código, a verificação de lotes expirados (`limpar_lotes_antigos` em `api.py`) **só roda quando alguém faz um novo envio**. Se ninguém enviar nada, o tarjado fica no disco até o próximo envio ou até a API ser encerrada.
-
-Os casos comuns continuam cobertos: "Baixar e concluir" apaga o lote quando todos os arquivos saem, "Apagar lote" e "Cancelar" apagam na hora, e o original é sempre apagado ao ser processado.
-
-**Correção sugerida:** uma verificação periódica (por exemplo, a cada minuto) na própria thread do agendador ou numa thread dedicada. É pequena e necessária antes de [ir para a intranet](Implantacao-na-intranet.md).
-
 ## Sem testes automatizados
 
 As mudanças foram verificadas com PDFs de teste e com o navegador controlado por script, mas esses testes não estão no repositório. Próximo passo sugerido:
@@ -27,7 +19,7 @@ As mudanças foram verificadas com PDFs de teste e com o navegador controlado po
 
 ## Operação
 
-- **Estado só na memória:** reiniciar a API perde os lotes em andamento.
+- **Estado só na memória:** reiniciar a API (ou atualizar o container) perde os lotes em andamento. Pelo mesmo motivo, roda com **uma réplica só**.
 - **Um arquivo por vez na fila:** num servidor compartilhado, um PDF grande segura a fila enquanto processa (os menores passam na frente entre um arquivo e outro, não no meio).
 - **Sem login:** quem tiver o id de um lote acessa enquanto ele existir.
 - **Estimativa de tempo** medida na máquina de desenvolvimento.
@@ -36,7 +28,6 @@ As mudanças foram verificadas com PDFs de teste e com o navegador controlado po
 
 - A rota `/login` e a página `pages/Login` vêm do template do design system e não são usadas.
 - Os componentes `ui/Datepicker`, `ui/Timepicker` e `ui/DateTimePicker` têm os 3 erros de lint conhecidos e também não são usados.
-- O LEIA-ME cita `web/src/hooks/useLote.ts`, que não existe mais: o papel é do `web/src/contexts/LotesContext`.
 
 ## Decisões pendentes
 

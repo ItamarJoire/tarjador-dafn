@@ -1,0 +1,36 @@
+# Tarjador com Docker Compose.
+#
+#   docker compose up -d --build     # compila e sobe; abra http://localhost:8080
+#   docker compose logs -f           # acompanha
+#   docker compose down              # para e apaga o container (e os temporários)
+#
+# Em produção, o servidor web do órgão (Nginx/IIS) fica na frente, com HTTPS,
+# e encaminha para esta porta. Ver docs/wiki/Implantacao-com-Docker.md.
+
+services:
+  tarjador:
+    build: .
+    image: tarjador:latest
+    container_name: tarjador
+    ports:
+      # porta na máquina : porta no container
+      - "${TARJADOR_PORTA_EXTERNA:-8080}:5000"
+    environment:
+      # Threads que atendem as requisições (envio, consulta, download)
+      TARJADOR_THREADS: "8"
+      # Núcleos para o tarjamento. Vazio: usa o limite de CPU abaixo (ou os da máquina)
+      TARJADOR_NUCLEOS: ""
+    restart: unless-stopped
+    # Dá tempo de apagar os temporários ao parar
+    stop_grace_period: 30s
+    # Endurecimento: sem ganhar privilégios e sem capacidades do kernel
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # Recursos: o OCR usa CPU e memória. Ajuste ao servidor.
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4g

@@ -1,6 +1,8 @@
-# Dependencias do redator.py + api.py (Python 3.10 a 3.13)
+# Dependencias do redator.py + api.py (Python 3.10 a 3.14)
 # pip install -r requirements.txt --ignore-requires-python
 pymupdf>=1.24
 numpy
 rapidocr-onnxruntime==1.4.4
 flask>=3.0
+# servidor de producao (python api.py --producao; e o que o Docker usa)
+waitress>=3.0

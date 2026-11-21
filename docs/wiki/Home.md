@@ -22,7 +22,8 @@ Para quem precisa entregar ou publicar documentos de processos (SEI, certidões,
 | [Front-end](Front-end.md) | Organização da tela em React: pastas, estado, armazenamento e tutorial |
 | [Segurança e privacidade](Seguranca-e-privacidade.md) | Onde cada dado fica, por quanto tempo, e o que a tarja não alcança |
 | [Desenvolvimento](Desenvolvimento.md) | Instalar, rodar, depurar, testar e usar pela linha de comando |
-| [Implantação na intranet](Implantacao-na-intranet.md) | O que falta para o Tarjador rodar num servidor do ITI |
+| [Implantação com Docker](Implantacao-com-Docker.md) | A imagem, as variáveis, o servidor web na frente e como subir e atualizar |
+| [Implantação na intranet](Implantacao-na-intranet.md) | O que já está pronto e o que falta com a TI para rodar num servidor do ITI |
 | [Limitações e próximos passos](Limitacoes-e-proximos-passos.md) | O que ainda não está resolvido e as decisões pendentes |
 
 ## Em uma frase, como funciona

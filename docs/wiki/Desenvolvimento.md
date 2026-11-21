@@ -29,6 +29,19 @@ O `--ignore-requires-python` é necessário porque o RapidOCR declara suporte s�
 - O Vite recarrega a tela a cada alteração em `web/src` e repassa `/api` para a API: não há CORS nem `.env` para configurar.
 - Alterou `api.py` ou `redator.py`? Reinicie a API.
 - `python api.py --porta 5050` sobe noutra porta (o proxy do Vite aponta para a 5000).
+- `python api.py --help` lista as opções (endereço, porta, pasta temporária, modo produção) e as variáveis de ambiente equivalentes.
+
+### Com Docker
+
+Para testar como vai rodar no servidor:
+
+```bash
+docker compose up -d --build     # http://localhost:8080
+docker compose logs -f
+docker compose down
+```
+
+A imagem compila a tela sozinha; não precisa de Node nem Python na máquina. Ver [Implantação com Docker](Implantacao-com-Docker.md).
 
 ## Depurar (F5)
 
