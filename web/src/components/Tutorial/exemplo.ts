@@ -19,6 +19,8 @@ export const LOTES_EXEMPLO: Lote[] = [
         paginasTotal: 24,
         paginasFeitas: 9,
         tarjasAplicadas: 0,
+        tarjasManuais: 0,
+        versao: 0,
         avisosDoArquivo: [],
         paginasParaConferir: [],
         tarjasParaConferir: [],
@@ -39,6 +41,8 @@ export const LOTES_EXEMPLO: Lote[] = [
         paginasTotal: 6,
         paginasFeitas: 6,
         tarjasAplicadas: 27,
+        tarjasManuais: 0,
+        versao: 0,
         avisosDoArquivo: [],
         paginasParaConferir: [{ pagina: 3, motivo: 'a página cita "CPF" 3 vezes e só 2 números foram tarjados' }],
         tarjasParaConferir: [

@@ -10,6 +10,9 @@ export interface PainelRevisaoProps {
   onBaixar: (arquivo: ArquivoLote) => void
   /** Índices dos arquivos já baixados e concluídos: não aparecem mais. */
   concluidos: number[]
+  /** Páginas aprovadas na conferência, por índice do arquivo. */
+  aprovacoes: Record<string, number[]>
+  onAprovar: (indiceArquivo: number, pagina: number, aprovada: boolean) => void
   /** Apaga o lote na API; se ainda estiver processando, cancela antes. */
   onApagar: () => void
   /** O pedido de apagar/cancelar está a caminho da API. */

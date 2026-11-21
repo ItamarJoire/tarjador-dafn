@@ -16,6 +16,8 @@ export const CHAVES = {
   arquivosDosLotes: 'tarjador:arquivos-dos-lotes',
   /** Por lote, os arquivos já baixados e concluídos (saem dos tarjamentos). */
   arquivosConcluidos: 'tarjador:arquivos-concluidos',
+  /** Por lote e arquivo, as páginas que a pessoa aprovou na conferência. */
+  paginasAprovadas: 'tarjador:paginas-aprovadas',
   /** Histórico de tarjamentos concluídos (localStorage: fica entre visitas). */
   historico: 'tarjador:historico',
   /** Versão anterior: um lote só. Lida uma vez e migrada para `lotes`. */

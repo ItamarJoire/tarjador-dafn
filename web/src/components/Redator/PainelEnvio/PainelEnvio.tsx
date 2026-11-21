@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { Button, Loading, Message, Upload, fileKey } from '../../../ui'
 import { contarPaginas } from '../../../services/contarPaginas'
+import { AVISE_O_SUPORTE, EM_DESENVOLVIMENTO, SUPORTE } from '../../../services/ambiente'
 import { ChecklistTipos } from '../ChecklistTipos'
 import { OpcaoChave } from '../OpcaoChave'
 import { plural } from '../agruparPorPagina'
@@ -14,9 +15,10 @@ const ehPdf = (arquivo: File) => arquivo.name.toLowerCase().endsWith('.pdf')
 /** Acima disto, o envio ganha um aviso de que vai demorar (não bloqueia). */
 const PAGINAS_PARA_AVISO = 300
 /**
- * Média com OCR medida nesta máquina: um PDF digitalizado de 16 páginas
- * cheias de texto levou ~210 s (~13 s por página). É só uma estimativa: varia
- * com a resolução do scan, a quantidade de texto e a máquina.
+ * Média com OCR medida na máquina de desenvolvimento: um PDF digitalizado de
+ * 16 páginas cheias de texto levou ~210 s (~13 s por página). É só uma
+ * estimativa: varia com a resolução do scan, a quantidade de texto e o
+ * servidor (medir de novo no servidor da intranet).
  */
 const SEGUNDOS_POR_PAGINA_COM_OCR = 12
 
@@ -87,28 +89,47 @@ export const PainelEnvio: React.FC<PainelEnvioProps> = ({
         <h1 className={styles['titulo']}>Tarjar documentos</h1>
         <p className={styles['descricao']}>
           Envie os PDFs, escolha o que tarjar e clique em Tarjar. Pode enviar mais enquanto outros são tarjados.
-          Nada fica guardado: o original é apagado ao ser processado e o tarjado, 30 minutos depois de pronto.
+          Nada fica guardado no servidor: o original é apagado ao ser processado e o tarjado, 30 minutos depois de
+          pronto.
         </p>
       </div>
 
-      {apiFora && (
-        <Message variant="error">
-          A API não respondeu. Abra um terminal na pasta do Tarjador, rode <code>python api.py</code> e recarregue
-          esta página.
-        </Message>
-      )}
-      {apiDesatualizada && (
-        <Message variant="warning">
-          A API em execução é de uma versão anterior e não consegue cancelar tarjamentos em andamento. Reinicie-a: no
-          terminal da API, aperte Ctrl+C e rode <code>python api.py</code> de novo.
-        </Message>
-      )}
-      {semMotorOcr && (
-        <Message variant="warning">
-          OCR não instalado: texto dentro de imagens não será lido. Instale com{' '}
-          <code>pip install rapidocr-onnxruntime==1.4.4 --ignore-requires-python</code>.
-        </Message>
-      )}
+      {/* Em desenvolvimento, o comando para resolver; na intranet, a quem recorrer */}
+      {apiFora &&
+        (EM_DESENVOLVIMENTO ? (
+          <Message variant="error">
+            A API não respondeu. Abra um terminal na pasta do Tarjador, rode <code>python api.py</code> e recarregue
+            esta página.
+          </Message>
+        ) : (
+          <Message variant="error">
+            O servidor do Tarjador não respondeu. Recarregue a página em alguns minutos. {AVISE_O_SUPORTE}
+          </Message>
+        ))}
+      {apiDesatualizada &&
+        (EM_DESENVOLVIMENTO ? (
+          <Message variant="warning">
+            A API em execução é de uma versão anterior e não consegue cancelar tarjamentos em andamento. Reinicie-a:
+            no terminal da API, aperte Ctrl+C e rode <code>python api.py</code> de novo.
+          </Message>
+        ) : (
+          <Message variant="warning">
+            O servidor do Tarjador está desatualizado: um tarjamento em andamento não pode ser cancelado. Avise{' '}
+            {SUPORTE}.
+          </Message>
+        ))}
+      {semMotorOcr &&
+        (EM_DESENVOLVIMENTO ? (
+          <Message variant="warning">
+            OCR não instalado: texto dentro de imagens não será lido. Instale com{' '}
+            <code>pip install rapidocr-onnxruntime==1.4.4 --ignore-requires-python</code>.
+          </Message>
+        ) : (
+          <Message variant="warning">
+            A leitura de imagens (OCR) está indisponível no servidor: dado dentro de imagem digitalizada não será
+            tarjado. Avise {SUPORTE}.
+          </Message>
+        ))}
 
       {/* Opções: só a chave e o título; a explicação fica no ícone de informação */}
       <div className={styles['opcoes']} role="group" aria-label="Opções" data-tour="opcoes">
@@ -195,7 +216,7 @@ export const PainelEnvio: React.FC<PainelEnvioProps> = ({
                 <strong>Envio grande: {totalPaginas} páginas.</strong>{' '}
                 {semOcr
                   ? 'Sem OCR é bem mais rápido, mas ainda pode levar alguns minutos.'
-                  : `Se forem digitalizadas, o OCR deve levar uns ${minutosComOcr} minutos nesta máquina, fora o que já estiver na fila.`}{' '}
+                  : `Se forem digitalizadas, o OCR deve levar uns ${minutosComOcr} minutos, fora o que já estiver na fila.`}{' '}
                 Pode enviar mesmo assim: os envios menores passam na frente na fila.
               </span>
             </p>

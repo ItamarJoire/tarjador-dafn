@@ -1,0 +1,38 @@
+// Mesmo formato do botão de tema
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--blue-warm-vivid-70-main);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  svg {
+    width: 20px;
+    height: 20px;
+    transition: transform var(--transition-fast);
+  }
+
+  &:hover {
+    background: var(--surface-muted);
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+:global([data-theme='dark']) .botao {
+  color: var(--blue-warm-vivid-30);
+}

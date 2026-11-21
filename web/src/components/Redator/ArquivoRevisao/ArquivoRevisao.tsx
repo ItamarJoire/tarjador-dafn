@@ -1,6 +1,6 @@
 import React, { useId, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faDownload, faFilePdf } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faDownload, faFilePdf, faImages } from '@fortawesome/free-solid-svg-icons'
 import { Badge, Button, Card, Message } from '../../../ui'
 import type { BadgeVariant } from '../../../ui/Badge/types'
 import type { ArquivoLote } from '../../../services/RedatorService'
@@ -9,7 +9,7 @@ import { PendenciasArquivo } from '../PendenciasArquivo'
 import type { ArquivoRevisaoProps } from './types'
 import styles from './ArquivoRevisao.module.scss'
 
-const selo = (arquivo: ArquivoLote, paginas: number): { variant: BadgeVariant; texto: string } => {
+const selo = (arquivo: ArquivoLote, paginas: number, pendentes: number): { variant: BadgeVariant; texto: string } => {
   switch (arquivo.estado) {
     case 'na_fila':
       return { variant: 'info', texto: 'Na fila' }
@@ -18,9 +18,10 @@ const selo = (arquivo: ArquivoLote, paginas: number): { variant: BadgeVariant; t
     case 'erro':
       return { variant: 'danger', texto: 'Erro' }
     default:
-      return paginas > 0
-        ? { variant: 'warning', texto: `${paginas} para conferir` }
-        : { variant: 'success', texto: 'Sem pendências' }
+      if (paginas === 0) return { variant: 'success', texto: 'Sem pendências' }
+      // Todas as páginas com pendência já aprovadas pela pessoa
+      if (pendentes === 0) return { variant: 'success', texto: 'Conferido' }
+      return { variant: 'warning', texto: `${pendentes} para conferir` }
   }
 }
 
@@ -33,20 +34,31 @@ const subtitulo = (arquivo: ArquivoLote) => {
   return `${plural(arquivo.paginasTotal, 'página', 'páginas')} · ${plural(arquivo.tarjasAplicadas, 'tarja aplicada', 'tarjas aplicadas')}`
 }
 
-const resumoDaConferencia = (paginas: number, avisos: number) => {
+const resumoDaConferencia = (paginas: number, aprovadas: number, avisos: number) => {
   const partes = []
-  if (paginas > 0) partes.push(plural(paginas, 'página para conferir', 'páginas para conferir'))
+  if (paginas > 0) {
+    partes.push(plural(paginas, 'página para conferir', 'páginas para conferir'))
+    partes.push(`${aprovadas} de ${paginas} ${aprovadas === 1 ? 'aprovada' : 'aprovadas'}`)
+  }
   if (avisos > 0) partes.push(plural(avisos, 'aviso', 'avisos'))
   return partes.length > 0 ? partes.join(' · ') : 'sem pendências'
 }
 
 /** Cartão de um arquivo do lote: andamento, conferência (abre e fecha) e download. */
-export const ArquivoRevisao: React.FC<ArquivoRevisaoProps> = ({ arquivo, onVerPagina, onBaixar, exemplo = false }) => {
+export const ArquivoRevisao: React.FC<ArquivoRevisaoProps> = ({
+  arquivo,
+  aprovadas,
+  onAprovar,
+  onVerPagina,
+  onBaixar,
+  exemplo = false
+}) => {
   // No exemplo do tutorial a conferência já vem aberta, para mostrar como é
   const [conferenciaAberta, setConferenciaAberta] = useState(exemplo)
   const idConferencia = useId()
   const paginas = agruparPorPagina(arquivo)
-  const { variant, texto } = selo(arquivo, paginas.length)
+  const aprovadasComPendencia = paginas.filter(p => aprovadas.includes(p.pagina)).length
+  const { variant, texto } = selo(arquivo, paginas.length, paginas.length - aprovadasComPendencia)
   const percentual = arquivo.paginasTotal ? Math.round((arquivo.paginasFeitas / arquivo.paginasTotal) * 100) : 0
   const concluido = arquivo.estado === 'concluido'
 
@@ -59,11 +71,22 @@ export const ArquivoRevisao: React.FC<ArquivoRevisaoProps> = ({ arquivo, onVerPa
       headerAction={<Badge variant={variant}>{texto}</Badge>}
       footer={
         concluido ? (
-          <span className={styles['baixar']} data-tour={exemplo ? 'exemplo-baixar' : undefined}>
-            <Button icon={<FontAwesomeIcon icon={faDownload} />} onClick={() => onBaixar(arquivo)}>
-              Baixar PDF tarjado
+          <div className={styles['rodape']}>
+            <span className={styles['baixar']} data-tour={exemplo ? 'exemplo-baixar' : undefined}>
+              <Button icon={<FontAwesomeIcon icon={faDownload} />} onClick={() => onBaixar(arquivo)}>
+                Baixar PDF tarjado
+              </Button>
+            </span>
+            {/* Qualquer página, não só as com pendência: dá para tarjar à mão
+                um dado que o tarjamento automático não pegou */}
+            <Button
+              variant="secondary"
+              icon={<FontAwesomeIcon icon={faImages} />}
+              onClick={() => onVerPagina(arquivo, paginas[0]?.pagina ?? 1)}
+            >
+              Ver páginas
             </Button>
-          </span>
+          </div>
         ) : undefined
       }
     >
@@ -106,7 +129,7 @@ export const ArquivoRevisao: React.FC<ArquivoRevisaoProps> = ({ arquivo, onVerPa
               {conferenciaAberta ? 'Fechar conferência' : 'Abrir conferência'}
               <span className={styles['alternar-resumo']}>
                 {' · '}
-                {resumoDaConferencia(paginas.length, arquivo.avisosDoArquivo.length)}
+                {resumoDaConferencia(paginas.length, aprovadasComPendencia, arquivo.avisosDoArquivo.length)}
               </span>
             </span>
             <FontAwesomeIcon icon={conferenciaAberta ? faChevronUp : faChevronDown} className={styles['seta']} />
@@ -120,7 +143,12 @@ export const ArquivoRevisao: React.FC<ArquivoRevisaoProps> = ({ arquivo, onVerPa
                 </Message>
               ))}
               {paginas.length > 0 ? (
-                <PendenciasArquivo paginas={paginas} onVer={pagina => onVerPagina(arquivo, pagina)} />
+                <PendenciasArquivo
+                  paginas={paginas}
+                  aprovadas={aprovadas}
+                  onAprovar={onAprovar}
+                  onVer={pagina => onVerPagina(arquivo, pagina)}
+                />
               ) : (
                 <span className={styles['vazio']}>
                   Nenhuma tarja com dúvida e nenhuma página suspeita. Mesmo assim, vale uma olhada rápida no PDF

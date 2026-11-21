@@ -17,6 +17,8 @@ export const PainelRevisao: React.FC<PainelRevisaoProps> = ({
   onVerPagina,
   onBaixar,
   concluidos: indicesConcluidos,
+  aprovacoes,
+  onAprovar,
   onApagar,
   apagando,
   erroAoApagar,
@@ -32,8 +34,14 @@ export const PainelRevisao: React.FC<PainelRevisaoProps> = ({
   const finalizados = lote.arquivos.filter(a => a.estado === 'concluido' || a.estado === 'erro').length
   const tarjas = concluidos.reduce((soma, a) => soma + a.tarjasAplicadas, 0)
   const paginas = concluidos.reduce((soma, a) => soma + agruparPorPagina(a).length, 0)
+  // Páginas com pendência que a pessoa já aprovou na conferência
+  const aprovadas = concluidos.reduce((soma, a) => {
+    const doArquivo = aprovacoes[a.indice] ?? []
+    return soma + agruparPorPagina(a).filter(p => doArquivo.includes(p.pagina)).length
+  }, 0)
+  const pendentes = paginas - aprovadas
   const emAndamento = lote.estado !== 'concluido'
-  const resumo = resumoDoLote(lote)
+  const resumo = resumoDoLote(lote, aprovacoes)
   const idTitulo = `${ancoraDoLote(lote.id)}-titulo`
 
   return (
@@ -70,11 +78,19 @@ export const PainelRevisao: React.FC<PainelRevisaoProps> = ({
             cada um aparece assim que ele termina.
           </Message>
         )}
-        {!emAndamento && paginas > 0 && (
+        {!emAndamento && pendentes > 0 && (
           <Message variant="warning">
-            {paginas === 1
+            {pendentes === 1
               ? '1 página precisa de conferência humana antes do uso.'
-              : `${paginas} páginas precisam de conferência humana antes do uso.`}
+              : `${pendentes} páginas precisam de conferência humana antes do uso.`}
+            {aprovadas > 0 && ` ${aprovadas} de ${paginas} já ${aprovadas === 1 ? 'aprovada' : 'aprovadas'}.`}
+          </Message>
+        )}
+        {!emAndamento && paginas > 0 && pendentes === 0 && (
+          <Message variant="success">
+            {paginas === 1
+              ? 'A página com pendência foi conferida e aprovada.'
+              : `As ${paginas} páginas com pendência foram conferidas e aprovadas.`}
           </Message>
         )}
         {!emAndamento && paginas === 0 && concluidos.length > 0 && (
@@ -87,6 +103,8 @@ export const PainelRevisao: React.FC<PainelRevisaoProps> = ({
           <ArquivoRevisao
             key={arquivo.indice}
             arquivo={arquivo}
+            aprovadas={aprovacoes[arquivo.indice] ?? []}
+            onAprovar={(pagina, aprovada) => onAprovar(arquivo.indice, pagina, aprovada)}
             onVerPagina={onVerPagina}
             onBaixar={onBaixar}
             exemplo={exemplo}

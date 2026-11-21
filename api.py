@@ -21,6 +21,10 @@ Rotas:
     GET    /api/lotes/<id>                          progresso e revisao manual
     GET    /api/lotes/<id>/arquivos/<i>/tarjado     baixa o PDF tarjado
     GET    /api/lotes/<id>/arquivos/<i>/paginas/<n> imagem PNG da pagina tarjada
+    POST   /api/lotes/<id>/arquivos/<i>/paginas/<n>/tarjas
+                                                    tarjas desenhadas a mao (JSON
+                                                    "retangulos": [{x0,y0,x1,y1}] em
+                                                    proporcao da pagina, de 0 a 1)
     DELETE /api/lotes/<id>                          apaga os arquivos do lote; se ainda
                                                     estiver processando, cancela antes
 """
@@ -30,6 +34,7 @@ from __future__ import annotations
 import argparse
 import atexit
 import contextlib
+import os
 import shutil
 import sys
 import tempfile
@@ -136,6 +141,8 @@ class Arquivo:
     paginas_total: int = 0
     paginas_feitas: int = 0
     tarjas_aplicadas: int = 0
+    tarjas_manuais: int = 0            # desenhadas pela pessoa na visualização da página
+    versao: int = 0                    # muda a cada tarja manual: o front troca a imagem em cache
     revisao: Optional[dict] = None
     tarjado: Optional[Path] = None
     erro: Optional[str] = None
@@ -322,6 +329,8 @@ def serializar(lote: Lote) -> dict:
             "paginasTotal": a.paginas_total,
             "paginasFeitas": a.paginas_feitas,
             "tarjasAplicadas": a.tarjas_aplicadas,
+            "tarjasManuais": a.tarjas_manuais,
+            "versao": a.versao,
             "avisosDoArquivo": rev.get("avisos_do_arquivo", []),
             "paginasParaConferir": rev.get("paginas_para_conferir", []),
             "tarjasParaConferir": [
@@ -481,6 +490,88 @@ def ver_pagina(id_lote: str, indice: int, pagina: int):
     resposta = send_file(BytesIO(png), mimetype="image/png")
     resposta.headers["Cache-Control"] = "private, max-age=600"
     return resposta
+
+
+MAXIMO_TARJAS_MANUAIS = 200
+TRAVA_EDICAO = threading.Lock()   # uma tarja manual por vez (regrava o PDF inteiro)
+
+
+def _retangulos_pedidos(brutos) -> list[tuple[float, float, float, float]]:
+    """Valida os retângulos do front: proporções da página (0 a 1), como a
+    pessoa os vê na imagem. Fora da página é cortado; risco minúsculo (um
+    clique sem arrastar) é ignorado."""
+    if not isinstance(brutos, list) or not brutos:
+        abort(400, description="Desenhe ao menos uma tarja na página.")
+    if len(brutos) > MAXIMO_TARJAS_MANUAIS:
+        abort(400, description=f"No máximo {MAXIMO_TARJAS_MANUAIS} tarjas por vez.")
+    retangulos = []
+    for bruto in brutos:
+        try:
+            x0, y0, x1, y1 = (min(max(float(bruto[k]), 0.0), 1.0) for k in ("x0", "y0", "x1", "y1"))
+        except (TypeError, KeyError, ValueError):
+            abort(400, description="Tarja inválida.")
+        x0, x1 = sorted((x0, x1))
+        y0, y1 = sorted((y0, y1))
+        if x1 - x0 >= 0.002 and y1 - y0 >= 0.002:
+            retangulos.append((x0, y0, x1, y1))
+    if not retangulos:
+        abort(400, description="As tarjas desenhadas são pequenas demais.")
+    return retangulos
+
+
+def _substituir_arquivo(novo: Path, destino: Path, tentativas: int = 20) -> None:
+    """Troca o PDF tarjado pela versão nova. No Windows, um download em
+    andamento segura o arquivo: insiste um pouco antes de desistir."""
+    for _ in range(tentativas):
+        try:
+            os.replace(novo, destino)
+            return
+        except PermissionError:
+            time.sleep(0.25)
+    novo.unlink(missing_ok=True)
+    abort(409, description="O PDF está em uso (um download em andamento?). Tente de novo em instantes.")
+
+
+@app.post("/api/lotes/<id_lote>/arquivos/<int:indice>/paginas/<int:pagina>/tarjas")
+def tarjar_pagina(id_lote: str, indice: int, pagina: int):
+    """Tarjas desenhadas pela pessoa na visualização da página, para o que o
+    tarjamento automático não cobriu (ou cobriu só em parte).
+
+    Mesmo método destrutivo das automáticas: o texto sob a tarja é apagado,
+    os pixels da imagem zerados e o desenho coberto removido. Não dá para
+    desfazer: o PDF é regravado sem o que estava embaixo.
+    """
+    lote = _lote_ou_404(id_lote)
+    arq = _arquivo_concluido(lote, indice)
+    retangulos = _retangulos_pedidos((request.get_json(silent=True) or {}).get("retangulos"))
+
+    with TRAVA_EDICAO:
+        novo = arq.tarjado.with_name(f"{arq.tarjado.stem}.editando.pdf")
+        with pymupdf.open(arq.tarjado) as doc:
+            if not 1 <= pagina <= doc.page_count:
+                abort(404, description="Página fora do documento.")
+            page = doc[pagina - 1]
+            # As proporções valem para a página como aparece (page.rect, já
+            # girada, igual à imagem); a tarja é gravada nas coordenadas sem giro
+            area = page.rect
+            for x0, y0, x1, y1 in retangulos:
+                visivel = pymupdf.Rect(area.x0 + x0 * area.width, area.y0 + y0 * area.height,
+                                       area.x0 + x1 * area.width, area.y0 + y1 * area.height)
+                alvo = visivel * page.derotation_matrix
+                alvo.normalize()
+                page.add_redact_annot(alvo, fill=(0, 0, 0))
+            page.apply_redactions(
+                images=pymupdf.PDF_REDACT_IMAGE_PIXELS,
+                graphics=getattr(pymupdf, "PDF_REDACT_LINE_ART_REMOVE_IF_COVERED", 1),
+                text=getattr(pymupdf, "PDF_REDACT_TEXT_REMOVE", 0),
+            )
+            doc.save(novo, garbage=4, deflate=True, clean=True)
+        _substituir_arquivo(novo, arq.tarjado)
+        arq.tarjas_aplicadas += len(retangulos)
+        arq.tarjas_manuais += len(retangulos)
+        arq.versao += 1
+
+    return jsonify(serializar(lote))
 
 
 @app.delete("/api/lotes/<id_lote>")

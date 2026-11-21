@@ -16,10 +16,59 @@
 }
 
 .quadro {
+  position: relative; // a camada de desenho fica por cima da imagem
   border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
   background: var(--surface-muted);
+}
+
+// --- Tarja à mão ---
+
+.ferramentas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.instrucao {
+  margin: 0;
+  font-size: var(--font-size-scale-base);
+  line-height: 1.45;
+  color: var(--surface-text);
+}
+
+.botoes-desenho {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.aviso-ok {
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  color: var(--green-cool-vivid-50-main);
+}
+
+// Cobre a imagem inteira: é onde se arrasta para desenhar
+.camada-desenho {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  touch-action: none; // no celular, arrastar desenha em vez de rolar
+  user-select: none;
+  outline: 2px dashed var(--red-vivid-50-main);
+  outline-offset: -2px;
+}
+
+// Tarja desenhada e ainda não aplicada: preta translúcida com borda vermelha
+.tarja-pendente {
+  position: absolute;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.72);
+  border: 2px solid var(--red-vivid-50-main);
+  pointer-events: none;
 }
 
 .imagem {
@@ -60,5 +109,18 @@
 
 .navegacao {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+// Check de página aprovada e baixar, à direita do rodapé
+.acoes-rodape {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+
+:global([data-theme='dark']) .aviso-ok {
+  color: var(--green-cool-vivid-20);
 }

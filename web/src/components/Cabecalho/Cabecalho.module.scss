@@ -48,11 +48,19 @@
   color: var(--text-muted);
 }
 
-// Tutorial e troca de tema, à direita
+// Tutorial, fluxo, perguntas e troca de tema, à direita
 .acoes {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.divisoria {
+  align-self: center;
+  width: 1px;
+  height: 24px;
+  margin: 0 8px;
+  background: color-mix(in srgb, var(--text-muted) 45%, transparent);
 }
 
 .tema {

@@ -1,0 +1,1 @@
+export { BotaoFaq } from './BotaoFaq'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons'
+import { faCirclePlay } from '@fortawesome/free-solid-svg-icons'
 import { useTour } from '@reactour/tour'
 import { META_DEMONSTRACAO } from './exemplo'
 import { montarPassos } from './passos'
@@ -22,7 +22,7 @@ export const BotaoTutorial: React.FC = () => {
 
   return (
     <button type="button" className={styles['botao']} onClick={abrir} data-tour="tutorial">
-      <FontAwesomeIcon icon={faCircleQuestion} />
+      <FontAwesomeIcon icon={faCirclePlay} />
       <span>Tutorial</span>
     </button>
   )

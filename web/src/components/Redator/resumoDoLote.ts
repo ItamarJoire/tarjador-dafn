@@ -9,8 +9,11 @@ export interface ResumoDoLote {
   tom: 'fila' | 'andamento' | 'pronto' | 'atencao'
 }
 
-/** O que o painel flutuante mostra de cada lote. */
-export const resumoDoLote = (lote: Lote): ResumoDoLote => {
+/**
+ * O que o painel mostra de cada lote. aprovacoes: páginas já aprovadas na
+ * conferência, por índice do arquivo; elas deixam de contar como "para conferir".
+ */
+export const resumoDoLote = (lote: Lote, aprovacoes: Record<string, number[]> = {}): ResumoDoLote => {
   const [primeiro, ...demais] = lote.arquivos
   const nome = demais.length > 0 ? `${primeiro.nome} e mais ${demais.length}` : (primeiro?.nome ?? 'Lote')
 
@@ -36,9 +39,12 @@ export const resumoDoLote = (lote: Lote): ResumoDoLote => {
   }
 
   const comErro = lote.arquivos.filter(a => a.estado === 'erro').length
-  const paraConferir = lote.arquivos
-    .filter(a => a.estado === 'concluido')
-    .reduce((soma, a) => soma + agruparPorPagina(a).length, 0)
+  const concluidos = lote.arquivos.filter(a => a.estado === 'concluido')
+  const comPendencia = concluidos.reduce((soma, a) => soma + agruparPorPagina(a).length, 0)
+  const paraConferir = concluidos.reduce((soma, a) => {
+    const aprovadas = aprovacoes[a.indice] ?? []
+    return soma + agruparPorPagina(a).filter(p => !aprovadas.includes(p.pagina)).length
+  }, 0)
 
   if (comErro > 0) {
     return {
@@ -56,5 +62,10 @@ export const resumoDoLote = (lote: Lote): ResumoDoLote => {
       tom: 'atencao'
     }
   }
-  return { nome, situacao: 'Pronto', progresso: null, tom: 'pronto' }
+  return {
+    nome,
+    situacao: comPendencia > 0 ? 'Pronto · conferido' : 'Pronto',
+    progresso: null,
+    tom: 'pronto'
+  }
 }

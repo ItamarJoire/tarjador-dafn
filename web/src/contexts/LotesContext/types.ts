@@ -1,4 +1,14 @@
-import type { ArquivoLote, GrupoTipos, Lote, OpcoesLote, SaudeApi } from '../../services/RedatorService'
+import type {
+  ArquivoLote,
+  GrupoTipos,
+  Lote,
+  OpcoesLote,
+  RetanguloProporcional,
+  SaudeApi
+} from '../../services/RedatorService'
+
+/** Páginas aprovadas na conferência: por índice do arquivo no lote. */
+export type AprovacoesDoLote = Record<string, number[]>
 
 /** Um arquivo baixado e concluído: sai dos tarjamentos e fica registrado aqui. */
 export interface EntradaHistorico {
@@ -47,4 +57,17 @@ export interface LotesContextValue {
   /** Tarjamentos concluídos, do mais recente para o mais antigo. */
   historico: EntradaHistorico[]
   limparHistorico: () => void
+  /** Páginas aprovadas na conferência, por lote (controle da pessoa). */
+  aprovacoes: Record<string, AprovacoesDoLote>
+  alternarAprovacao: (idLote: string, indice: number, pagina: number, aprovada: boolean) => void
+  /**
+   * Aplica tarjas desenhadas à mão numa página e atualiza o lote (a imagem da
+   * página muda de versão). Devolve a mensagem de erro, ou null se deu certo.
+   */
+  tarjarManualmente: (
+    idLote: string,
+    indice: number,
+    pagina: number,
+    retangulos: RetanguloProporcional[]
+  ) => Promise<string | null>
 }

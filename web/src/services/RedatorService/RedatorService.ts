@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { api } from '../api'
-import type { CatalogoTipos, Lote, OpcoesLote, SaudeApi } from './types'
+import { AVISE_O_SUPORTE, EM_DESENVOLVIMENTO } from '../ambiente'
+import type { CatalogoTipos, Lote, OpcoesLote, RetanguloProporcional, SaudeApi } from './types'
 
 const BASE = '/api'
 
@@ -66,8 +67,21 @@ export const RedatorService = {
   },
 
   /** Imagem da página JÁ TARJADA — a API nunca devolve o original. */
-  urlPagina: (idLote: string, indice: number, pagina: number, largura = 1100) =>
-    urlAbsoluta(`${BASE}/lotes/${idLote}/arquivos/${indice}/paginas/${pagina}?largura=${largura}`)
+  urlPagina: (idLote: string, indice: number, pagina: number, versao = 0, largura = 1100) =>
+    // A versão muda a cada tarja manual: sem ela, o navegador mostraria a
+    // imagem antiga, que a API manda guardar em cache por 10 minutos
+    urlAbsoluta(`${BASE}/lotes/${idLote}/arquivos/${indice}/paginas/${pagina}?largura=${largura}&v=${versao}`),
+
+  /**
+   * Aplica tarjas desenhadas à mão numa página do PDF tarjado. Definitivas,
+   * como as automáticas. Devolve o lote atualizado.
+   */
+  tarjarPagina: async (idLote: string, indice: number, pagina: number, retangulos: RetanguloProporcional[]) => {
+    const { data } = await api.post<Lote>(`${BASE}/lotes/${idLote}/arquivos/${indice}/paginas/${pagina}/tarjas`, {
+      retangulos
+    })
+    return data
+  }
 }
 
 /** Traduz qualquer falha de chamada numa frase para o usuário. */
@@ -76,7 +90,9 @@ export const mensagemDeErro = (erro: unknown): string => {
     const doServidor = (erro.response?.data as { erro?: string } | undefined)?.erro
     if (doServidor) return doServidor
     if (!erro.response) {
-      return 'A API local não respondeu. Confira se ela está rodando (python api.py).'
+      return EM_DESENVOLVIMENTO
+        ? 'A API não respondeu. Confira se ela está rodando (python api.py).'
+        : `O servidor do Tarjador não respondeu. Tente de novo em alguns minutos. ${AVISE_O_SUPORTE}`
     }
     return `A API respondeu com erro ${erro.response.status}.`
   }

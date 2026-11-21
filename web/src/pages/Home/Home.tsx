@@ -84,7 +84,7 @@ export const Home = () => {
 
   return (
     <>
-      <PageTitle title="Tarjar documentos" />
+      <PageTitle />
       <PainelEnvio
         enviando={enviando}
         erro={erroEnvio}

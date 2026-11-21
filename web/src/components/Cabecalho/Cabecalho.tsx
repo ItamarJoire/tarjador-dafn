@@ -5,9 +5,11 @@ import { useTheme } from '../../contexts'
 import { paths } from '../../routes/paths'
 import logo from '../../assets/logo-tarjador.svg'
 import { BotaoTutorial } from '../Tutorial'
+import { BotaoFaq } from '../Faq'
+import { BotaoFluxo } from '../Fluxo'
 import styles from './Cabecalho.module.scss'
 
-/** Marca do sistema à esquerda e troca de tema à direita. Não há login. */
+/** Marca do sistema à esquerda; tutorial, fluxo, perguntas frequentes e tema à direita. Não há login. */
 export const Cabecalho = () => {
   const { theme, toggleTheme } = useTheme()
   const escuro = theme === 'dark'
@@ -26,6 +28,10 @@ export const Cabecalho = () => {
 
         <div className={styles['acoes']}>
           <BotaoTutorial />
+          <BotaoFluxo />
+          <BotaoFaq />
+          {/* Separa a ajuda (tutorial, fluxo, perguntas) da troca de tema */}
+          <span className={styles['divisoria']} aria-hidden="true" />
           <button
             type="button"
             className={styles['tema']}

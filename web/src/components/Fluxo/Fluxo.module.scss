@@ -1,0 +1,316 @@
+// --- Cores do fluxograma (claro; o escuro fica no fim) ---
+
+.janela {
+  --fluxo-linha: #4b4b4b;
+  --fluxo-texto: #1b1b1b;
+  --fluxo-pessoa-fundo: #c9f0d8;
+  --fluxo-pessoa-borda: #168821;
+  --fluxo-navegador-fundo: #dbe8fb;
+  --fluxo-navegador-borda: #1351b4;
+  --fluxo-api-fundo: #ffffff;
+  --fluxo-api-borda: #333333;
+  --fluxo-aviso-fundo: #fff5c2;
+  --fluxo-aviso-borda: #b38c00;
+  --fluxo-fundo: #ffffff;
+}
+
+// Janela quase do tamanho da tela (o seletor duplo vence o tamanho "large" do Modal)
+.janela.janela {
+  max-width: 1320px;
+  height: calc(100vh - 48px);
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+
+// --- Barra: legenda à esquerda, zoom à direita ---
+
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.3rem;
+  color: var(--text-muted);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.amostra {
+  width: 18px;
+  height: 12px;
+  border: 1.5px solid;
+  border-radius: 3px;
+}
+
+.legenda-pessoa {
+  background: var(--fluxo-pessoa-fundo);
+  border-color: var(--fluxo-pessoa-borda);
+}
+
+.legenda-navegador {
+  background: var(--fluxo-navegador-fundo);
+  border-color: var(--fluxo-navegador-borda);
+}
+
+.legenda-api {
+  background: var(--fluxo-api-fundo);
+  border-color: var(--fluxo-api-borda);
+}
+
+.legenda-aviso {
+  background: var(--fluxo-aviso-fundo);
+  border-color: var(--fluxo-aviso-borda);
+}
+
+.amostra-decisao {
+  width: 11px;
+  height: 11px;
+  margin: 0 3px;
+  border: 1.5px solid var(--fluxo-api-borda);
+  transform: rotate(45deg);
+}
+
+.zoom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--surface-text);
+  font: inherit;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--surface-muted);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+.percentual {
+  min-width: 48px;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 1.35rem;
+  text-align: center;
+  color: var(--surface-text);
+}
+
+.reset {
+  margin-left: 4px;
+}
+
+.dica {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+
+// --- Área do desenho: rola nos dois sentidos e se move arrastando ---
+
+.area {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--fluxo-fundo);
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.arrastando {
+  cursor: grabbing;
+}
+
+.secao {
+  width: max-content;
+  min-width: 100%;
+  padding: 20px 24px 8px;
+  box-sizing: border-box;
+
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+}
+
+// Fica à vista enquanto o desenho rola para os lados
+.cabecalho-secao {
+  position: sticky;
+  left: 24px;
+  width: max-content;
+  margin-bottom: 8px;
+}
+
+.titulo-secao {
+  margin: 0;
+  font-size: var(--font-size-scale-up-02);
+  font-weight: var(--font-weight-regular);
+  color: var(--fluxo-texto);
+}
+
+.descricao-secao {
+  margin: 2px 0 0;
+  font-size: 1.35rem;
+  color: var(--text-muted);
+}
+
+.diagrama {
+  display: block;
+  overflow: visible;
+}
+
+// --- Caixas ---
+
+.no {
+  rect,
+  polygon {
+    stroke-width: 1.5;
+  }
+}
+
+.ator-pessoa {
+  rect,
+  polygon {
+    fill: var(--fluxo-pessoa-fundo);
+    stroke: var(--fluxo-pessoa-borda);
+  }
+}
+
+.ator-navegador {
+  rect,
+  polygon {
+    fill: var(--fluxo-navegador-fundo);
+    stroke: var(--fluxo-navegador-borda);
+  }
+}
+
+.ator-api {
+  rect,
+  polygon {
+    fill: var(--fluxo-api-fundo);
+    stroke: var(--fluxo-api-borda);
+  }
+}
+
+// Observação: amarela, seja de quem for
+.no.forma-aviso {
+  rect {
+    fill: var(--fluxo-aviso-fundo);
+    stroke: var(--fluxo-aviso-borda);
+  }
+}
+
+// Fim do fluxo: borda mais grossa
+.forma-fim rect {
+  stroke-width: 2.5;
+}
+
+.texto-no {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--fluxo-texto);
+  overflow-wrap: break-word;
+}
+
+.forma-decisao .texto-no {
+  padding: 0;
+  font-size: 11.5px;
+}
+
+// --- Setas ---
+
+.ligacao polyline {
+  fill: none;
+  stroke: var(--fluxo-linha);
+  stroke-width: 1.4;
+}
+
+.tracejada polyline {
+  stroke-dasharray: 5 4;
+}
+
+.ponta {
+  fill: var(--fluxo-linha);
+}
+
+// SIM/NÃO sobre a linha, com um contorno da cor do fundo que "corta" a linha
+.rotulo {
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--fluxo-texto);
+  stroke: var(--fluxo-fundo);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+  paint-order: stroke;
+}
+
+// --- Tema escuro ---
+
+:global([data-theme='dark']) .janela {
+  --fluxo-linha: #b5b5b5;
+  --fluxo-texto: #f0f0f0;
+  --fluxo-pessoa-fundo: #173d26;
+  --fluxo-pessoa-borda: #4fc46a;
+  --fluxo-navegador-fundo: #172b4d;
+  --fluxo-navegador-borda: #6f9be6;
+  --fluxo-api-fundo: #262626;
+  --fluxo-api-borda: #bdbdbd;
+  --fluxo-aviso-fundo: #45390c;
+  --fluxo-aviso-borda: #e0c050;
+  --fluxo-fundo: #1b1b1b;
+}

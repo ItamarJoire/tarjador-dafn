@@ -1,10 +1,18 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import axios from 'axios'
 import { CHAVES, RedatorService, mensagemDeErro, preferencias, sessao } from '../../services'
-import type { ArquivoLote, GrupoTipos, Lote, OpcoesLote, SaudeApi } from '../../services/RedatorService'
+import { AVISE_O_SUPORTE, EM_DESENVOLVIMENTO } from '../../services/ambiente'
+import type {
+  ArquivoLote,
+  GrupoTipos,
+  Lote,
+  OpcoesLote,
+  RetanguloProporcional,
+  SaudeApi
+} from '../../services/RedatorService'
 import { fileKey } from '../../ui/Upload'
 import { LotesContext } from './context'
-import type { EntradaHistorico } from './types'
+import type { AprovacoesDoLote, EntradaHistorico } from './types'
 
 const INTERVALO_MS = 1000
 
@@ -46,6 +54,22 @@ const arquivosSalvos = (): ArquivosDosLotes => {
       (par): par is [string, string[]] => Array.isArray(par[1]) && par[1].every(c => typeof c === 'string')
     )
   )
+}
+
+// Páginas aprovadas na conferência, por lote e arquivo (sessão, como os lotes).
+const aprovacoesSalvas = (): Record<string, AprovacoesDoLote> => {
+  const salvas = sessao.lerJson<unknown>(CHAVES.paginasAprovadas)
+  if (!salvas || typeof salvas !== 'object' || Array.isArray(salvas)) return {}
+  const validas: Record<string, AprovacoesDoLote> = {}
+  for (const [idLote, porArquivo] of Object.entries(salvas as Record<string, unknown>)) {
+    if (!porArquivo || typeof porArquivo !== 'object' || Array.isArray(porArquivo)) continue
+    validas[idLote] = Object.fromEntries(
+      Object.entries(porArquivo as Record<string, unknown>).filter(
+        (par): par is [string, number[]] => Array.isArray(par[1]) && par[1].every(p => typeof p === 'number')
+      )
+    )
+  }
+  return validas
 }
 
 // Arquivos já baixados e concluídos, por lote (sessão, como os lotes).
@@ -101,6 +125,11 @@ export function LotesProvider({ children }: { children: ReactNode }) {
   const [arquivosDosLotes, setArquivosDosLotes] = useState<ArquivosDosLotes>(arquivosSalvos)
 
   const [concluidos, setConcluidos] = useState<Record<string, number[]>>(concluidosSalvos)
+  const [aprovacoes, setAprovacoes] = useState<Record<string, AprovacoesDoLote>>(aprovacoesSalvas)
+
+  useEffect(() => {
+    sessao.gravarJson(CHAVES.paginasAprovadas, aprovacoes)
+  }, [aprovacoes])
   const [historico, setHistorico] = useState<EntradaHistorico[]>(historicoSalvo)
 
   useEffect(() => {
@@ -132,6 +161,7 @@ export function LotesProvider({ children }: { children: ReactNode }) {
     setErrosAoApagar(atuais => semChave(atuais, id))
     setArquivosDosLotes(atuais => semChave(atuais, id))
     setConcluidos(atuais => semChave(atuais, id))
+    setAprovacoes(atuais => semChave(atuais, id))
   }, [])
 
   useEffect(() => {
@@ -247,8 +277,10 @@ export function LotesProvider({ children }: { children: ReactNode }) {
         // 409 só vem de API anterior ao cancelamento (ela recusava apagar lote
         // em andamento): a atual sempre aceita. Diz o que fazer em vez do erro cru.
         const mensagem = conflito(falha)
-          ? 'A API em execução é de uma versão anterior e não cancela lote em andamento. ' +
-            'Reinicie a API (Ctrl+C no terminal e python api.py) e tente de novo.'
+          ? EM_DESENVOLVIMENTO
+            ? 'A API em execução é de uma versão anterior e não cancela lote em andamento. ' +
+              'Reinicie a API (Ctrl+C no terminal e python api.py) e tente de novo.'
+            : `O servidor do Tarjador está desatualizado e não consegue cancelar um lote em andamento. ${AVISE_O_SUPORTE}`
           : mensagemDeErro(falha)
         setErrosAoApagar(atuais => ({ ...atuais, [id]: mensagem }))
         return false
@@ -295,6 +327,31 @@ export function LotesProvider({ children }: { children: ReactNode }) {
 
   const limparHistorico = useCallback(() => setHistorico([]), [])
 
+  const alternarAprovacao = useCallback((idLote: string, indice: number, pagina: number, aprovada: boolean) => {
+    setAprovacoes(atuais => {
+      const doLote = atuais[idLote] ?? {}
+      const paginas = new Set(doLote[indice] ?? [])
+      if (aprovada) paginas.add(pagina)
+      else paginas.delete(pagina)
+      return { ...atuais, [idLote]: { ...doLote, [indice]: [...paginas].sort((a, b) => a - b) } }
+    })
+  }, [])
+
+  const tarjarManualmente = useCallback(
+    async (idLote: string, indice: number, pagina: number, retangulos: RetanguloProporcional[]) => {
+      try {
+        const atualizado = await RedatorService.tarjarPagina(idLote, indice, pagina, retangulos)
+        if (!removidos.current.has(idLote)) {
+          setLotes(atuais => atuais.map(l => (l.id === idLote ? atualizado : l)))
+        }
+        return null
+      } catch (falha) {
+        return mensagemDeErro(falha)
+      }
+    },
+    []
+  )
+
   /**
    * O arquivo está num lote ainda na fila ou sendo tarjado? Compara nome,
    * tamanho e data; para lote sem essa identificação (enviado por outra aba ou
@@ -331,7 +388,10 @@ export function LotesProvider({ children }: { children: ReactNode }) {
         concluidos,
         baixar,
         historico,
-        limparHistorico
+        limparHistorico,
+        aprovacoes,
+        alternarAprovacao,
+        tarjarManualmente
       }}
     >
       {children}

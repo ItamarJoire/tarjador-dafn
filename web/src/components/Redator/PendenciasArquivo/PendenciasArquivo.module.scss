@@ -46,6 +46,25 @@
   color: var(--surface-text);
 }
 
+// Check de aprovada e o botão de ver, juntos à direita
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+// Página aprovada: faixa verde à esquerda e o conteúdo mais apagado
+.aprovada {
+  margin-left: -12px;
+  padding-left: 9px;
+  border-left: 3px solid var(--green-cool-vivid-50-main);
+
+  .itens {
+    opacity: 0.6;
+  }
+}
+
 .valor {
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 0.9em;

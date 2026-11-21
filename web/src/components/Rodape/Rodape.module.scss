@@ -5,6 +5,10 @@
 
 // Mesma coluna central do cabeçalho e do conteúdo
 .rodape-interno {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   max-width: calc(var(--largura-conteudo) + 2 * var(--recuo-lateral));
   margin: 0 auto;
   box-sizing: border-box;
@@ -12,6 +16,7 @@
   text-align: center;
 
   p {
+    margin: 0;
     color: inherit;
     font-size: var(--font-size-scale-base);
   }
@@ -19,4 +24,12 @@
   strong {
     font-weight: var(--font-weight-bold);
   }
+}
+
+// Linha institucional, abaixo do contato e um pouco mais discreta
+.institucional {
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  width: 100%;
+  opacity: 0.85;
 }

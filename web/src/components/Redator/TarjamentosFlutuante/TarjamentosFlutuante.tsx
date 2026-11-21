@@ -33,7 +33,18 @@ const contagem = (emAndamento: number, prontos: number) => {
  * para um botão no canto.
  */
 export const TarjamentosFlutuante: React.FC<TarjamentosFlutuanteProps> = ({ modo: modoEscolhido, onModoChange }) => {
-  const { lotes: lotesReais, errosDeConsulta, apagando, errosAoApagar, apagar, concluidos, baixar } = useLotes()
+  const {
+    lotes: lotesReais,
+    errosDeConsulta,
+    apagando,
+    errosAoApagar,
+    apagar,
+    concluidos,
+    baixar,
+    aprovacoes,
+    alternarAprovacao,
+    tarjarManualmente
+  } = useLotes()
   const areaLateral = useContext(AreaLateralContext)
   const [previa, setPrevia] = useState<Previa | null>(null)
 
@@ -136,6 +147,8 @@ export const TarjamentosFlutuante: React.FC<TarjamentosFlutuanteProps> = ({ modo
                 onVerPagina={nadaNoExemplo}
                 onBaixar={nadaNoExemplo}
                 concluidos={[]}
+                aprovacoes={{}}
+                onAprovar={nadaNoExemplo}
                 onApagar={nadaNoExemplo}
                 apagando={false}
                 erroAoApagar={null}
@@ -149,6 +162,8 @@ export const TarjamentosFlutuante: React.FC<TarjamentosFlutuanteProps> = ({ modo
                 onVerPagina={abrirPrevia(lote.id)}
                 onBaixar={pedirDownload(lote)}
                 concluidos={concluidos[lote.id] ?? []}
+                aprovacoes={aprovacoes[lote.id] ?? {}}
+                onAprovar={(indice, pagina, aprovada) => alternarAprovacao(lote.id, indice, pagina, aprovada)}
                 onApagar={() => void apagar(lote.id)}
                 apagando={apagando === lote.id}
                 erroAoApagar={errosAoApagar[lote.id] ?? null}
@@ -192,6 +207,9 @@ export const TarjamentosFlutuante: React.FC<TarjamentosFlutuanteProps> = ({ modo
             onTrocarPagina={nadaNoExemplo}
             onClose={nadaNoExemplo}
             onBaixar={nadaNoExemplo}
+            aprovadas={[]}
+            onAprovar={nadaNoExemplo}
+            onTarjar={async () => null}
             imagemExemplo={IMAGEM_PAGINA_EXEMPLO}
           />
           <ConfirmarDownload
@@ -213,6 +231,13 @@ export const TarjamentosFlutuante: React.FC<TarjamentosFlutuanteProps> = ({ modo
             onTrocarPagina={pagina => setPrevia(atual => (atual ? { ...atual, pagina } : atual))}
             onClose={() => setPrevia(null)}
             onBaixar={arquivo => loteDaPrevia && pedirDownload(loteDaPrevia)(arquivo)}
+            aprovadas={(previa && aprovacoes[previa.idLote]?.[previa.indiceArquivo]) || []}
+            onAprovar={(pagina, aprovada) =>
+              previa && alternarAprovacao(previa.idLote, previa.indiceArquivo, pagina, aprovada)
+            }
+            onTarjar={async (pagina, retangulos) =>
+              previa ? tarjarManualmente(previa.idLote, previa.indiceArquivo, pagina, retangulos) : null
+            }
           />
 
           <ConfirmarDownload

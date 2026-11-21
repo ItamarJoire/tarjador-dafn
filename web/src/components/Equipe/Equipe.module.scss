@@ -1,0 +1,185 @@
+// --- Chamada no rodapé (fundo escuro) ---
+
+.chamada {
+  margin: 0;
+  color: inherit;
+  font-size: var(--font-size-scale-base);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  color: var(--white);
+  font: inherit;
+  font-weight: var(--font-weight-semi-bold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: transform var(--transition-fast);
+  }
+
+  &:hover {
+    color: var(--blue-warm-vivid-20);
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--white);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+// --- Janela ---
+
+.janela {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  p {
+    margin: 0;
+    font-size: 1.45rem;
+    line-height: 1.55;
+    color: var(--surface-text);
+  }
+}
+
+.dica {
+  padding: 10px 12px;
+  border-left: 3px solid var(--blue-warm-vivid-70-main);
+  border-radius: 4px;
+  background: var(--surface-muted);
+}
+
+// --- Lista de contatos (janela e perguntas frequentes) ---
+
+.contatos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contato {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--blue-warm-vivid-70-main);
+  color: var(--white);
+  font-size: 1.3rem;
+  font-weight: var(--font-weight-semi-bold);
+}
+
+.dados {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.nome {
+  font-size: 1.45rem;
+  font-weight: var(--font-weight-semi-bold);
+  color: var(--surface-text);
+}
+
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+  font-size: 1.35rem;
+  color: var(--blue-warm-vivid-70-main);
+  text-decoration: none;
+
+  svg {
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Texto do e-mail: é o que fica selecionado se o navegador não deixar copiar
+.endereco {
+  user-select: text;
+}
+
+.copiar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--surface-text);
+  font: inherit;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  &:hover {
+    background: var(--surface-muted);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+
+  // Tela estreita: só o ícone
+  @media (max-width: 480px) {
+    span {
+      display: none;
+    }
+  }
+}
+
+:global([data-theme='dark']) {
+  .email {
+    color: var(--blue-warm-vivid-30);
+  }
+
+  .avatar {
+    background: var(--blue-warm-vivid-60);
+  }
+}

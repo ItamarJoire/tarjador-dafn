@@ -26,6 +26,10 @@ export interface ArquivoLote {
   paginasTotal: number
   paginasFeitas: number
   tarjasAplicadas: number
+  /** Quantas das tarjas foram desenhadas à mão, na visualização da página. */
+  tarjasManuais: number
+  /** Muda a cada tarja manual: entra na URL da imagem da página (cache). */
+  versao: number
   /** Riscos que a tarja não alcança (anexo embutido, marcador com dado pessoal). */
   avisosDoArquivo: string[]
   paginasParaConferir: PaginaParaConferir[]
@@ -78,4 +82,12 @@ export interface SaudeApi {
   motorOcr: string | null
   /** Ausente em API anterior ao cancelamento: ela precisa ser reiniciada. */
   cancelamento?: boolean
+}
+
+/** Tarja desenhada à mão: proporções da página como aparece (0 a 1). */
+export interface RetanguloProporcional {
+  x0: number
+  y0: number
+  x1: number
+  y1: number
 }

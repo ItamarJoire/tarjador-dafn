@@ -23,6 +23,7 @@ export const PASSOS_DO_EXEMPLO = [
   'exemplo-conferencia',
   'previa-imagem',
   'previa-pendencia',
+  'previa-tarjar',
   'previa-navegacao',
   'exemplo-baixar',
   'download-opcoes'
@@ -145,8 +146,9 @@ export function montarPassos(): StepType[] {
           de tarjas, ou quando o número foi lido com pouca confiança.
         </p>
         <p>
-          <strong>Abrir conferência</strong> lista essas páginas, com o motivo. Em cada uma,{' '}
-          <strong>Ver página</strong> abre a página já tarjada. Veja a seguir.
+          <strong>Abrir conferência</strong> lista essas páginas, com o motivo. Marque <strong>Aprovada</strong> em
+          cada uma conforme for conferindo, para ter o controle do que falta. <strong>Ver página</strong> abre a página
+          já tarjada. Veja a seguir.
         </p>
       </>
     ),
@@ -173,12 +175,32 @@ export function montarPassos(): StepType[] {
       </p>
     ),
     passo(
+      'previa-tarjar',
+      'Tarjar à mão',
+      <>
+        <p>
+          Se algum dado ficou sem tarja, ou coberto só em parte, clique em <strong>Tarjar à mão</strong> e arraste
+          sobre a página para cobrir. Dá para desenhar várias e desfazer antes de aplicar.
+        </p>
+        <p>
+          Ao <strong>aplicar</strong>, as tarjas são definitivas como as automáticas: o que está embaixo é apagado do
+          PDF.
+        </p>
+      </>
+    ),
+    passo(
       'previa-navegacao',
       'Próximas páginas',
-      <p>
-        Os botões <strong>Página 5</strong> levam à próxima página que pede conferência, sem fechar a janela.{' '}
-        <strong>Baixar PDF</strong> baixa o arquivo inteiro.
-      </p>
+      <>
+        <p>
+          <strong>Anterior</strong> e <strong>Próxima</strong> percorrem todas as páginas;{' '}
+          <strong>Próxima pendência</strong> pula para a próxima que pede conferência.
+        </p>
+        <p>
+          Conferida a página, marque <strong>Página aprovada</strong>. <strong>Baixar PDF</strong> baixa o arquivo
+          inteiro.
+        </p>
+      </>
     ),
 
     // --- Baixar ---
@@ -221,9 +243,15 @@ export function montarPassos(): StepType[] {
     passo(
       'tutorial',
       'Pronto!',
-      <p>
-        Para rever este guia quando quiser, clique em <strong>Tutorial</strong>.
-      </p>
+      <>
+        <p>
+          Para rever este guia quando quiser, clique em <strong>Tutorial</strong>.
+        </p>
+        <p>
+          Ao lado, o ícone de fluxo mostra <strong>como o Tarjador funciona</strong>, num fluxograma, e o de
+          interrogação abre as <strong>perguntas frequentes</strong>.
+        </p>
+      </>
     )
   )
 
