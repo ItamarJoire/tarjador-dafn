@@ -1,0 +1,149 @@
+.tela {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.topo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 820px;
+}
+
+.titulo {
+  margin: 0;
+}
+
+.topo .descricao {
+  color: var(--text-muted);
+}
+
+// Cartão de envio na largura toda
+.linha {
+  display: flex;
+  flex-direction: column;
+}
+
+.envio {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 28px 24px;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.envio-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.envio-titulo {
+  margin: 0;
+  font-size: var(--font-size-scale-up-04);
+  font-weight: var(--font-weight-regular);
+}
+
+.envio .envio-descricao {
+  font-size: var(--font-size-scale-base);
+  color: var(--text-muted);
+}
+
+// Upload e o aviso de arquivo que não é PDF
+.area-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// O Upload do DS vem com width: 40%. Duas classes vencem a regra do componente.
+.envio .upload {
+  width: 100%;
+}
+
+// Opções em uma linha acima do cartão de envio
+.opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 40px;
+  margin-bottom: -16px;
+}
+
+.secao-titulo {
+  margin: 0;
+  font-size: var(--font-size-scale-up-02);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+// Botão Tarjar no fim do cartão de envio, com o status ao lado
+.acoes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  min-height: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.acoes-status {
+  min-width: 0;
+}
+
+.resumo {
+  font-size: var(--font-size-scale-base);
+  color: var(--text-muted);
+}
+
+.alerta {
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--red-vivid-50-main);
+}
+
+// Envio com muitas páginas: avisa quanto deve demorar (não impede o envio)
+.aviso-grande {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--yellow-vivid-5-alternative);
+  color: var(--yellow-vivid-80);
+  font-size: var(--font-size-scale-base);
+  line-height: 1.45;
+
+  svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    color: var(--yellow-vivid-50);
+  }
+}
+
+:global([data-theme='dark']) .aviso-grande {
+  background: var(--yellow-vivid-80);
+  color: var(--yellow-vivid-5-alternative);
+
+  svg {
+    color: var(--yellow-vivid-20-main);
+  }
+}
+
+.tela code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.95em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.06);
+}

@@ -1,0 +1,40 @@
+{
+  // F5 com a configuração escolhida no painel "Executar e depurar".
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API (depurar)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/api.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "redator.py: aplicar em entrada/",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/redator.py",
+      "args": ["aplicar", "entrada", "-o", "saida"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Front no Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/web/src"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Tarjador (API depurando + front)",
+      "configurations": ["API (depurar)", "Front no Chrome"],
+      "preLaunchTask": "Front (Vite)",
+      "stopAll": true
+    }
+  ]
+}

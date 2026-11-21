@@ -1,0 +1,64 @@
+.corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pendencias {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.corpo .contexto {
+  font-size: var(--font-size-scale-down-01);
+  color: var(--text-muted);
+}
+
+.quadro {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface-muted);
+}
+
+.imagem {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+// Exemplo do tutorial: a página inteira cabe na tela e a moldura tem o tamanho
+// da imagem (o destaque contorna só a página, centralizada)
+.area-compacta {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.imagem-compacta {
+  width: auto;
+  max-width: 100%;
+  max-height: 52vh;
+  margin: 0 auto;
+}
+
+.quadro .falha {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.navegacao {
+  display: flex;
+  gap: 8px;
+}

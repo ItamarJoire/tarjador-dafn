@@ -1,0 +1,279 @@
+.iti-header {
+  color: var(--surface-text);
+  background: var(--surface);
+  // border-top: 1px solid var(--border);
+  position: relative;
+}
+
+.iti-header,
+.iti-header *,
+.iti-header *::before,
+.iti-header *::after {
+  box-sizing: border-box;
+}
+
+.iti-header ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iti-header * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Ícones utilitários
+   ========================================================================== */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--blue-warm-vivid-70-main);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.icon-btn:hover {
+  background: var(--gray-5);
+  color: var(--blue-warm-vivid-70-main);
+}
+
+/* ==========================================================================
+   Barra principal (logo, navegação institucional, ações)
+   ========================================================================== */
+.iti-header-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0px;
+  flex-wrap: nowrap;
+}
+
+.header-logo {
+  flex-shrink: 0;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.iti-header-nav {
+  margin-left: auto;
+}
+
+@media (max-width: 768px) {
+  .iti-header-nav {
+    display: none;
+  }
+}
+
+.iti-header-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  order: 3;
+}
+
+.logo {
+  font-size: var(--font-size-scale-up-04);
+  font-weight: var(--font-weight-extra-bold);
+  letter-spacing: -0.5px;
+}
+
+.logo-gov {
+  background: linear-gradient(90deg, #2670e8 0%, #168821 55%, #ffcd07 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.logo-br {
+  color: var(--gray-50);
+  margin-left: 1px;
+}
+
+.iti-header-ministry {
+  margin: 0;
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+  font-size: var(--font-size-scale-base);
+  line-height: 1.3;
+  color: var(--gray-50);
+  max-width: 260px;
+}
+
+.iti-header-divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 24px;
+  margin-left: auto;
+  background: var(--border);
+}
+
+.iti-header-kebab {
+  display: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.iti-header-kebab-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 30;
+  min-width: 190px;
+  padding: 8px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.iti-header-kebab-menu li a {
+  display: block;
+  padding: 8px 18px;
+  font-size: var(--font-size-scale-base);
+  color: var(--gray-50);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.iti-header-kebab-menu li a:hover {
+  background: var(--gray-5);
+  color: var(--blue-warm-vivid-70-main);
+}
+
+/* ==========================================================================
+   Barra da instituição (toggle do menu, título e busca)
+   ========================================================================== */
+.iti-header-institution {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0px;
+}
+
+.iti-header-menu-toggle {
+  flex-shrink: 0;
+}
+
+.iti-header-search {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  width: 100%;
+  max-width: 420px;
+}
+
+@media (max-width: 768px) {
+  .iti-header-search {
+    width: auto;
+    max-width: none;
+  }
+}
+
+.iti-header-title {
+  margin: 0;
+  font-size: var(--font-size-scale-up-02);
+  font-weight: var(--font-weight-medium);
+  color: var(--surface-text);
+}
+
+.iti-header-paragh {
+  font-size: var(--font-size-scale-up-01);
+  line-height: 1.3;
+}
+
+/* ==========================================================================
+   Widget flutuante de acessibilidade (estilo VLibras)
+   ========================================================================== */
+.iti-header-a11y-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--blue-warm-vivid-70-main);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.iti-header-a11y-fab:hover {
+  background: var(--blue-warm-vivid-90);
+}
+
+/* ==========================================================================
+   Adaptação para mobile
+   ========================================================================== */
+@media (max-width: 768px) {
+  .iti-header-ministry {
+    display: none;
+  }
+
+  .iti-header-main {
+    padding: 10px 16px 14px;
+    gap: 10px;
+  }
+
+  .header-logo {
+    order: 1;
+  }
+
+  .iti-header-theme-toggle {
+    order: 2;
+  }
+
+  .iti-header-kebab {
+    display: block;
+    order: 4;
+  }
+
+  .iti-header-divider {
+    display: none;
+  }
+
+  .logo {
+    font-size: var(--font-size-scale-up-02);
+  }
+
+  .hide-mobile-inline {
+    display: none;
+  }
+
+  .iti-header-institution {
+    padding: 10px 16px;
+    gap: 10px;
+  }
+
+  .iti-header-title {
+    font-size: var(--font-size-scale-base);
+    line-height: 1.3;
+  }
+
+  .iti-header-a11y-fab {
+    width: 48px;
+    height: 48px;
+    right: 14px;
+    bottom: 14px;
+  }
+}

@@ -1,0 +1,78 @@
+{
+  // Ctrl+Shift+B roda "Tarjador: API + front". Demais tarefas: Ctrl+Shift+P > "Tasks: Run Task".
+  // As tarefas de Python são "process" e chamam o Python do .venv direto, sem shell:
+  // - com shell, o Git Bash come as barras invertidas do caminho do Windows;
+  // - ${command:python.interpreterPath} vem com "c:" minúsculo e o VS Code
+  //   o trata como relativo, grudando a pasta do projeto na frente.
+  // Por isso o caminho parte de ${workspaceFolder}. Requer o .venv (veja o LEIA-ME).
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Tarjador: API + front",
+      "dependsOn": ["API (Flask)", "Front (Vite)"],
+      "dependsOrder": "parallel",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "API (Flask)",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "linux": { "command": "${workspaceFolder}/.venv/bin/python" },
+      "osx": { "command": "${workspaceFolder}/.venv/bin/python" },
+      "args": ["api.py"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "presentation": { "group": "tarjador", "panel": "dedicated", "reveal": "always" },
+      "problemMatcher": {
+        "owner": "tarjador-api",
+        "pattern": { "regexp": "^__nunca__$" },
+        "background": { "activesBegin": true, "beginsPattern": "Tarjador", "endsPattern": "Ctrl\\+C encerra" }
+      }
+    },
+    {
+      "label": "Front (Vite)",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "isBackground": true,
+      "presentation": { "group": "tarjador", "panel": "dedicated", "reveal": "always" },
+      "problemMatcher": {
+        "owner": "tarjador-front",
+        "pattern": { "regexp": "^__nunca__$" },
+        "background": { "activesBegin": true, "beginsPattern": "VITE", "endsPattern": "Local:" }
+      }
+    },
+    {
+      "label": "Instalar dependências (Python)",
+      "type": "process",
+      "command": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "linux": { "command": "${workspaceFolder}/.venv/bin/python" },
+      "osx": { "command": "${workspaceFolder}/.venv/bin/python" },
+      "args": ["-m", "pip", "install", "-r", "requirements.txt", "--ignore-requires-python"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Instalar dependências (front)",
+      "type": "shell",
+      "command": "npm install",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Front: build (gera web/dist)",
+      "type": "shell",
+      "command": "npm run build",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Front: lint",
+      "type": "shell",
+      "command": "npm run lint",
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "problemMatcher": ["$eslint-stylish"]
+    }
+  ]
+}

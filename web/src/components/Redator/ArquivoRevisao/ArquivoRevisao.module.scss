@@ -1,0 +1,108 @@
+// O Card rola o corpo quando passa da altura; aqui ele cresce livre
+.arquivo {
+  overflow: visible;
+}
+
+// O Card do DS pinta todo <p> do corpo com --surface-text, o que deixa o
+// texto do Message claro sobre fundo claro no tema escuro.
+.arquivo [role='alert'] p {
+  color: var(--gray-90);
+}
+
+.nome {
+  overflow-wrap: anywhere;
+  font-size: 1.5rem;
+}
+
+.revisao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.andamento {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.progresso {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.progresso-barra {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--blue-warm-vivid-70-main);
+  transition: width var(--transition-fast);
+}
+
+.texto-andamento,
+.vazio {
+  font-size: var(--font-size-scale-base);
+  line-height: var(--font-line-height-medium);
+  color: var(--text-muted);
+}
+
+.conferencia {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Linha que abre e fecha a conferência do arquivo
+.alternar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  color: var(--blue-warm-vivid-70-main);
+  font: inherit;
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  &:hover {
+    background: var(--blue-warm-vivid-5);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+.alternar-resumo {
+  font-weight: var(--font-weight-regular);
+  color: var(--text-muted);
+}
+
+.seta {
+  flex-shrink: 0;
+  width: 12px;
+  height: 12px;
+}
+
+:global([data-theme='dark']) .alternar {
+  color: var(--blue-warm-vivid-30);
+
+  &:hover {
+    background: var(--gray-80-main);
+  }
+}
+
+// Envolve o botão de baixar (o tutorial destaca este trecho no exemplo)
+.baixar {
+  display: inline-flex;
+}

@@ -1,0 +1,306 @@
+// Rawline, a fonte do gov.br Design System, servida de public/fonts.
+// O template tinha os arquivos mas não registrava a fonte: caía na reserva.
+@each $peso in 300, 400, 500, 600, 700, 800 {
+  @font-face {
+    font-family: 'Rawline';
+    font-style: normal;
+    font-weight: $peso;
+    font-display: swap;
+    src: url('/fonts/rawline-#{$peso}.ttf') format('truetype');
+  }
+}
+
+:root {
+  color-scheme: light;
+
+  --bg: #fff;
+  --surface: var(--white);
+  --surface-text: var(--gray-90);
+  --surface-muted: var(--gray-5);
+  --text-muted: var(--gray-60);
+  --border: var(--gray-10);
+  --border-strong: var(--gray-30);
+  --footer-surface: var(--blue-warm-vivid-90);
+  // Tutorial: escurecimento em volta e contorno da área explicada
+  --tutorial-mascara: rgba(27, 27, 27, 0.55);
+  --tutorial-destaque: #2670e8;
+
+  // Textos
+  --white: #fff;
+  --gray-90: #1b1b1b;
+  --gray-85: #272727;
+  --gray-80-main: #333;
+  --gray-75: #3a3a3a;
+  --gray-70: #555;
+  --gray-60: #636363;
+  --gray-50: #757575;
+  --gray-40: #888;
+  --gray-30: #adadad;
+  --gray-20: #ccc;
+  --gray-10: #e6e6e6;
+  --gray-5: #f0f0f0;
+  --gray-4: #f3f3f3;
+  --gray-3: #f6f6f6;
+  --gray-2: #f8f8f8;
+  --gray-1: #fcfcfc;
+
+  // Primária
+  --blue-warm-vivid-90: #071d41;
+  --blue-warm-vivid-80: #0c326f;
+  --blue-warm-vivid-70-main: #1351b4;
+  --blue-warm-vivid-60: #155bcb;
+  --blue-warm-vivid-50: #2670e8;
+  --blue-warm-vivid-40: #5992ed;
+  --blue-warm-vivid-30: #81aefc;
+  --blue-warm-vivid-20: #adcdff;
+  --blue-warm-vivid-10: #d4e5ff;
+  --blue-warm-vivid-5: #edf5ff;
+
+  // Feedback sucesso
+  --green-cool-vivid-80: #19311e;
+  --green-cool-vivid-70: #154c21;
+  --green-cool-vivid-60: #216e1f;
+  --green-cool-vivid-50-main: #168821;
+  --green-cool-vivid-40: #00a91c;
+  --green-cool-vivid-30: #21c834;
+  --green-cool-vivid-20: #70e17b;
+  --green-cool-vivid-10: #70e17b;
+  --green-cool-vivid-5-alternative: #e3f5e1;
+
+  // Feedback alerta
+  --yellow-vivid-80: #422d19;
+  --yellow-vivid-70: #5c4809;
+  --yellow-vivid-60: #776017;
+  --yellow-vivid-50: #947100;
+  --yellow-vivid-40: #b38c00;
+  --yellow-vivid-30: #ddaa01;
+  --yellow-vivid-20-main: #ffcd07;
+  --yellow-vivid-10: #fee685;
+  --yellow-vivid-5-alternative: #fff5c2;
+
+  // Feedback erro
+  --red-vivid-80: #5c1111;
+  --red-vivid-70: #8b0a03;
+  --red-vivid-60: #b50909;
+  --red-vivid-50-main: #e52207;
+  --red-vivid-40: #fb5a47;
+  --red-vivid-30: #ff8d7b;
+  --red-vivid-20: #fdb8ae;
+  --red-vivid-10-alternative: #fde0db;
+  --red-vivid-5: #fff3f2;
+
+  --rawline: 'Rawline', 'Raleway', sans-serif;
+  --font-family-base: var(--rawline);
+
+  // Tipografia (escala tipográfica do Padrão Digital de Governo - gov.br Design System)
+  --font-weight-thin: 100;
+  --font-weight-extra-light: 200;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+  --font-weight-black: 900;
+
+  --font-line-height-low: 1.15;
+  --font-line-height-medium: 1.45;
+  --font-line-height-high: 1.85;
+
+  --font-size-scale-down-03: 0.8106rem;
+  --font-size-scale-down-02: 0.9716rem;
+  --font-size-scale-down-01: 1.1662rem;
+  --font-size-scale-base: 1.4rem;
+  --font-size-scale-up-01: 1.68rem;
+  --font-size-scale-up-02: 2.016rem;
+  --font-size-scale-up-03: 2.4192rem;
+  --font-size-scale-up-04: 2.9036rem;
+  --font-size-scale-up-05: 3.4832rem;
+  --font-size-scale-up-06: 4.1804rem;
+  --font-size-scale-up-07: 5.0162rem;
+  --font-size-scale-up-08: 6.02rem;
+  --font-size-scale-up-09: 7.224rem;
+  --font-size-scale-up-10: 8.6688rem;
+  --font-size-scale-up-11: 10.402rem;
+
+  --transition-fast: 0.2s ease;
+
+  // Coluna central de leitura (como no gov.br): cabeçalho e conteúdo alinhados,
+  // estreita o bastante para deixar margem generosa dos lados
+  --largura-conteudo: 960px;
+  // Sidebar de tarjamentos, à direita: mais larga que a coluna do formulário
+  // (é onde se confere e baixa), dentro de limites para não sumir nem engolir a tela
+  --largura-tarjamentos: clamp(480px, 55vw, 1040px);
+  --recuo-lateral: 48px;
+
+  @media (max-width: 768px) {
+    --recuo-lateral: 20px;
+  }
+
+  font: 18px/145% var(--rawline);
+  letter-spacing: 0.18px;
+  color: var(--gray-80-main);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  font-size: 62.5%;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: var(--gray-90);
+  --surface: var(--bg);
+  --surface-text: var(--gray-5);
+  --surface-muted: var(--gray-85);
+  --text-muted: var(--gray-30);
+  --border: var(--gray-75);
+  --border-strong: var(--gray-70);
+  --footer-surface: var(--gray-85);
+  // No escuro a página já é escura: o resto fica bem mais apagado e o contorno
+  // da área explicada é um azul claro, para ela saltar aos olhos
+  --tutorial-mascara: rgba(0, 0, 0, 0.8);
+  --tutorial-destaque: #81aefc;
+  color: var(--gray-5);
+  background: var(--bg);
+}
+
+// O fundo ocupa a tela toda; a coluna de conteúdo é limitada por --largura-conteudo.
+#root {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--surface-text);
+  font-family: var(--font-family-base);
+  line-height: var(--font-line-height-low);
+  margin: 0 0 1.6rem;
+}
+
+h1 {
+  font-size: var(--font-size-scale-up-04);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.4px;
+
+  @media (min-width: 576px) {
+    font-size: var(--font-size-scale-up-06);
+    font-weight: var(--font-weight-light);
+  }
+}
+
+h2 {
+  font-size: var(--font-size-scale-up-03);
+  font-weight: var(--font-weight-semi-bold);
+  letter-spacing: -0.24px;
+
+  @media (min-width: 576px) {
+    font-size: var(--font-size-scale-up-05);
+    font-weight: var(--font-weight-regular);
+  }
+}
+
+h3 {
+  font-size: var(--font-size-scale-up-02);
+  font-weight: var(--font-weight-bold);
+
+  @media (min-width: 576px) {
+    font-size: var(--font-size-scale-up-04);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+h4 {
+  font-size: var(--font-size-scale-up-01);
+  font-weight: var(--font-weight-bold);
+
+  @media (min-width: 576px) {
+    font-size: var(--font-size-scale-up-03);
+    font-weight: var(--font-weight-semi-bold);
+  }
+}
+
+h5 {
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-extra-bold);
+  text-transform: uppercase;
+
+  @media (min-width: 576px) {
+    font-size: var(--font-size-scale-up-02);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
+h6 {
+  font-size: var(--font-size-scale-down-01);
+  font-weight: var(--font-weight-extra-bold);
+  text-transform: uppercase;
+
+  @media (min-width: 576px) {
+    font-size: var(--font-size-scale-up-01);
+  }
+}
+
+p {
+  color: var(--surface-text);
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--font-line-height-medium);
+  margin: 0;
+
+  @media (min-width: 576px) {
+    font-size: var(--font-size-scale-up-01);
+  }
+}
+
+a {
+  color: var(--blue-warm-vivid-70-main);
+  text-decoration: none;
+  cursor: pointer;
+
+  // &:hover {
+  //   text-decoration: underline;
+  // }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+p a {
+  text-decoration: underline;
+}
+
+span {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+small {
+  font-size: 80%;
+}
+
+.svg-inline--fa {
+  font-size: 1rem;
+
+  @media (max-width: 1024px) {
+    font-size: 1.6rem;
+  }
+}

@@ -1,0 +1,126 @@
+// Compacta: chave, título e ícone de informação numa linha
+.opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.desabilitada {
+  opacity: 0.6;
+}
+
+.titulo {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semi-bold);
+  color: var(--surface-text);
+  cursor: pointer;
+}
+
+.info {
+  position: relative;
+  display: inline-flex;
+}
+
+.info-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--blue-warm-vivid-70-main);
+  cursor: help;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 1px;
+  }
+}
+
+// Balão com a explicação: abre no hover, no foco do teclado ou no toque
+.balao {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  z-index: 20;
+  width: max-content;
+  max-width: 280px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--gray-90);
+  color: var(--white);
+  font-size: 1.3rem;
+  font-weight: var(--font-weight-regular);
+  line-height: 1.45;
+  box-shadow: 0 6px 18px rgba(27, 27, 27, 0.25);
+  transform: translateX(-50%);
+  // fechado não ocupa espaço (com visibility, o balão ainda alargava a página no celular)
+  display: none;
+  pointer-events: none;
+
+  // setinha apontando para o ícone
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    border: 6px solid transparent;
+    border-top-color: var(--gray-90);
+    transform: translateX(-50%);
+  }
+}
+
+.info:hover .balao,
+.info-botao:focus-visible + .balao,
+.balao-fixo {
+  display: block;
+}
+
+// Tela estreita: o balão abre embaixo da opção, alinhado à esquerda dela,
+// para não sair pela borda da tela
+@media (max-width: 576px) {
+  .opcao {
+    position: relative;
+  }
+
+  .info {
+    position: static;
+  }
+
+  .balao {
+    top: calc(100% + 8px);
+    right: 0;
+    bottom: auto;
+    left: 0;
+    width: auto;
+    max-width: none;
+    transform: none;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+:global([data-theme='dark']) {
+  .info-botao {
+    color: var(--blue-warm-vivid-30);
+  }
+
+  .balao {
+    background: var(--gray-5);
+    color: var(--gray-90);
+
+    &::after {
+      border-top-color: var(--gray-5);
+    }
+  }
+}

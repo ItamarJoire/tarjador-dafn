@@ -1,0 +1,158 @@
+// Abaixo do cartão de envio, no mesmo estilo de cartão
+.historico {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.topo-textos {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.titulo {
+  margin: 0;
+  font-size: var(--font-size-scale-up-02);
+  font-weight: var(--font-weight-semi-bold);
+  line-height: 1.2;
+}
+
+.contagem {
+  font-size: 1.3rem;
+  color: var(--text-muted);
+}
+
+.limpar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--blue-warm-vivid-70-main);
+  font: inherit;
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+
+  svg {
+    width: 13px;
+    height: 13px;
+    transition: transform var(--transition-fast);
+  }
+
+  // Hover pega o link todo: a cor escurece no ícone e no texto, o ícone
+  // cresce um pouco e o texto ganha sublinhado
+  &:hover {
+    color: var(--blue-warm-vivid-80);
+
+    svg {
+      transform: scale(1.15);
+    }
+
+    span {
+      text-decoration: underline;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+// Lista com rolagem própria quando passa de ~7 itens; a página não cresce.
+// O espaço à direita separa a barra de rolagem das datas.
+.lista {
+  max-height: 420px;
+  margin: 0;
+  padding: 0 12px 0 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+
+  & + & {
+    border-top: 1px solid var(--border);
+  }
+}
+
+.icone {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  color: var(--green-cool-vivid-50-main);
+}
+
+.item-textos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.nome {
+  overflow-wrap: anywhere;
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  color: var(--surface-text);
+}
+
+.detalhes {
+  font-size: 1.3rem;
+  color: var(--text-muted);
+}
+
+.data {
+  flex-shrink: 0;
+  font-size: 1.3rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.modal-texto {
+  font-size: var(--font-size-scale-base);
+}
+
+.modal-acoes {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+:global([data-theme='dark']) .limpar {
+  color: var(--blue-warm-vivid-30);
+
+  // No escuro, o hover clareia em vez de escurecer
+  &:hover {
+    color: var(--blue-warm-vivid-20);
+  }
+}

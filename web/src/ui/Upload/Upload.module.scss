@@ -1,0 +1,127 @@
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 40%;
+}
+
+.upload-label {
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--surface-text);
+}
+
+.upload-dropzone {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1.5px dashed var(--blue-warm-vivid-40);
+  border-radius: 8px;
+  background: var(--blue-warm-vivid-5);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.is-dragging {
+  background: var(--blue-warm-vivid-10);
+  border-color: var(--blue-warm-vivid-60);
+}
+
+.upload-dropzone.is-disabled {
+  cursor: not-allowed;
+  background: var(--surface-muted);
+  border-color: var(--border);
+}
+
+.upload-icon {
+  color: var(--blue-warm-vivid-70-main);
+  width: 16px;
+  height: 16px;
+}
+
+.upload-text {
+  font-style: italic;
+  font-size: var(--font-size-scale-base);
+  color: var(--blue-warm-vivid-70-main);
+}
+
+.upload-dropzone.is-disabled .upload-icon,
+.upload-dropzone.is-disabled .upload-text {
+  color: var(--gray-40);
+}
+
+.upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.upload-helper {
+  font-size: var(--font-size-scale-base);
+  color: var(--text-muted);
+}
+
+// Aviso de arquivo repetido (ignorado)
+.upload-repeated {
+  margin: 0;
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  color: var(--yellow-vivid-60);
+}
+
+:global([data-theme='dark']) .upload-repeated {
+  color: var(--yellow-vivid-20-main);
+}
+
+.upload-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--surface-text);
+    font-size: var(--font-size-scale-base);
+  }
+}
+
+.upload-file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-file-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--red-vivid-50-main);
+  }
+}

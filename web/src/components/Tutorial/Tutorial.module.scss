@@ -1,0 +1,118 @@
+// --- Conteúdo de cada passo ---
+
+.passo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.titulo {
+  margin: 0;
+  padding-right: 16px; // não encostar no X
+  font-size: var(--font-size-scale-up-01);
+  font-weight: var(--font-weight-semi-bold);
+  line-height: 1.25;
+  color: var(--surface-text);
+}
+
+.texto {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  p {
+    margin: 0;
+    font-size: 1.45rem;
+    line-height: 1.5;
+    color: var(--surface-text);
+  }
+}
+
+// Sair em qualquer etapa, sempre à vista
+.sair {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--blue-warm-vivid-70-main);
+  font: inherit;
+  font-size: 1.35rem;
+  font-weight: var(--font-weight-semi-bold);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+// --- Botão do cabeçalho ---
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--blue-warm-vivid-70-main);
+  font: inherit;
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--transition-fast);
+  }
+
+  &:hover {
+    background: var(--surface-muted);
+    color: var(--blue-warm-vivid-80);
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+
+  // Tela estreita: só o ícone
+  @media (max-width: 480px) {
+    padding: 0 10px;
+
+    span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+  }
+}
+
+:global([data-theme='dark']) {
+  .sair,
+  .botao {
+    color: var(--blue-warm-vivid-30);
+  }
+
+  .botao:hover {
+    color: var(--blue-warm-vivid-20);
+  }
+}

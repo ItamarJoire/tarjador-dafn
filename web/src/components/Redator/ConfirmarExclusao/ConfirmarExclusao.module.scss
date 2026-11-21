@@ -1,0 +1,39 @@
+// Faixa vermelha no topo: deixa claro, antes de ler, que a ação é destrutiva.
+.perigo {
+  border-top: 4px solid var(--red-vivid-60);
+  overflow: hidden;
+}
+
+.titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--red-vivid-60);
+}
+
+.icone {
+  width: 20px;
+  height: 20px;
+}
+
+.texto {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  p {
+    font-size: var(--font-size-scale-base);
+  }
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+  width: 100%;
+}
+
+:global([data-theme='dark']) .titulo {
+  color: var(--red-vivid-40);
+}

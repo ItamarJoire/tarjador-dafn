@@ -1,0 +1,6 @@
+# Dependencias do redator.py + api.py (Python 3.10 a 3.13)
+# pip install -r requirements.txt --ignore-requires-python
+pymupdf>=1.24
+numpy
+rapidocr-onnxruntime==1.4.4
+flask>=3.0

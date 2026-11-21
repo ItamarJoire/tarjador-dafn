@@ -1,0 +1,85 @@
+.cabecalho {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+// Mesma coluna central do conteúdo da página
+.cabecalho-interno {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: calc(var(--largura-conteudo) + 2 * var(--recuo-lateral));
+  min-height: 64px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 10px var(--recuo-lateral);
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.marca-logo {
+  display: block;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.marca-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: var(--font-line-height-low);
+}
+
+.marca-nome {
+  font-size: var(--font-size-scale-up-01);
+  font-weight: var(--font-weight-medium);
+  color: var(--blue-warm-vivid-70-main);
+}
+
+.marca-descricao {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+
+// Tutorial e troca de tema, à direita
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--blue-warm-vivid-70-main);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: var(--surface-muted);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}

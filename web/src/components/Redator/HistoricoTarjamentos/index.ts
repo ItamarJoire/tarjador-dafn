@@ -1,0 +1,1 @@
+export { HistoricoTarjamentos } from './HistoricoTarjamentos'

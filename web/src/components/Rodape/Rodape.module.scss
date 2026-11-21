@@ -1,0 +1,22 @@
+.rodape {
+  background: var(--footer-surface);
+  color: var(--white);
+}
+
+// Mesma coluna central do cabeçalho e do conteúdo
+.rodape-interno {
+  max-width: calc(var(--largura-conteudo) + 2 * var(--recuo-lateral));
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 20px var(--recuo-lateral);
+  text-align: center;
+
+  p {
+    color: inherit;
+    font-size: var(--font-size-scale-base);
+  }
+
+  strong {
+    font-weight: var(--font-weight-bold);
+  }
+}

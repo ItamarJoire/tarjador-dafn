@@ -1,0 +1,29 @@
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 64px 0;
+
+  h1 {
+    margin: 0;
+  }
+
+  p {
+    max-width: 480px;
+    font-size: 1.6rem;
+    color: var(--text-muted);
+  }
+}
+
+.illustration {
+  width: 240px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.home-link {
+  margin-top: 16px;
+}

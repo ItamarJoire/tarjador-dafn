@@ -1,0 +1,195 @@
+// Campo do cartão de envio: rótulo, Editar e as etiquetas dos tipos marcados
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.desabilitado {
+  opacity: 0.6;
+}
+
+.topo {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+// Igual ao rótulo do Upload ("PDFs do processo")
+.rotulo {
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--surface-text);
+}
+
+.contagem {
+  font-size: 1.3rem;
+  color: var(--text-muted);
+}
+
+.editar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--blue-warm-vivid-70-main);
+  font: inherit;
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform var(--transition-fast);
+  }
+
+  // Hover pega o link todo: a cor escurece no ícone e no texto, o ícone
+  // cresce um pouco e o texto ganha sublinhado
+  &:hover {
+    color: var(--blue-warm-vivid-80);
+
+    svg {
+      transform: scale(1.15);
+    }
+
+    span {
+      text-decoration: underline;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+// Etiquetas dos tipos marcados: borda azul, cantos redondos, texto azul em negrito
+.etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etiqueta {
+  padding: 4px 12px;
+  border: 1px solid var(--blue-warm-vivid-70-main);
+  border-radius: 999px;
+  background: var(--blue-warm-vivid-5);
+  color: var(--blue-warm-vivid-70-main);
+  font-size: 1.3rem;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.vazio {
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  color: var(--red-vivid-50-main);
+}
+
+// --- Modal ---
+
+.modal-atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-bottom: 20px;
+}
+
+.atalho {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--blue-warm-vivid-70-main);
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: var(--font-weight-semi-bold);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--blue-warm-vivid-70-main);
+    outline-offset: 2px;
+  }
+}
+
+// Grupos lado a lado, cada um com o nome como título e os checkboxes embaixo
+.grupos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 24px;
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.grupo-titulo {
+  font-size: 1.2rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.itens {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-alerta {
+  margin: 20px 0 0;
+  font-size: var(--font-size-scale-base);
+  font-weight: var(--font-weight-semi-bold);
+  color: var(--red-vivid-50-main);
+}
+
+.modal-acoes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+
+.modal-contagem {
+  margin-right: auto;
+  font-size: var(--font-size-scale-base);
+  color: var(--text-muted);
+}
+
+:global([data-theme='dark']) {
+  .editar,
+  .atalho {
+    color: var(--blue-warm-vivid-30);
+  }
+
+  // No escuro, o hover clareia em vez de escurecer
+  .editar:hover {
+    color: var(--blue-warm-vivid-20);
+  }
+
+  .etiqueta {
+    border-color: var(--blue-warm-vivid-40);
+    background: var(--blue-warm-vivid-90);
+    color: var(--blue-warm-vivid-20);
+  }
+}

@@ -1,0 +1,55 @@
+.pendencias {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.pendencias .alerta {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--font-size-scale-down-01);
+  line-height: var(--font-line-height-medium);
+  color: var(--surface-text);
+}
+
+.tarjas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarja {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--blue-warm-vivid-40);
+  border-radius: 0 4px 4px 0;
+  background: var(--surface-muted);
+}
+
+.tarja-linha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tarja-valor {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: var(--font-size-scale-down-01);
+  color: var(--surface-text);
+  overflow-wrap: anywhere;
+}
+
+.tarja-motivo {
+  font-size: var(--font-size-scale-down-01);
+  line-height: var(--font-line-height-medium);
+  color: var(--text-muted);
+}

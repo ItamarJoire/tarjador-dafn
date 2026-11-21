@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Front
+web/node_modules/
+
+# PDFs de trabalho: têm dado pessoal, nunca vão para o repositório
+entrada/
+saida/
+*.pdf
+
+# Segredos e configuração local
+.env
