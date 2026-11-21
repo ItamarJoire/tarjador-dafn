@@ -1,6 +1,6 @@
 # Desenvolvimento
 
-O passo a passo detalhado no VS Code está no [LEIA-ME](../../LEIA-ME.md). Aqui vai o resumo, mais o que não cabe lá.
+O passo a passo detalhado no VS Code está no [README](../../README.md). Aqui vai o resumo, mais o que não cabe lá.
 
 ## Pré-requisitos
 

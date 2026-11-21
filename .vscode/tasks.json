@@ -4,7 +4,7 @@
   // - com shell, o Git Bash come as barras invertidas do caminho do Windows;
   // - ${command:python.interpreterPath} vem com "c:" minúsculo e o VS Code
   //   o trata como relativo, grudando a pasta do projeto na frente.
-  // Por isso o caminho parte de ${workspaceFolder}. Requer o .venv (veja o LEIA-ME).
+  // Por isso o caminho parte de ${workspaceFolder}. Requer o .venv (veja o README).
   "version": "2.0.0",
   "tasks": [
     {

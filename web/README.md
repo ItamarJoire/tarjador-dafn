@@ -33,7 +33,8 @@ basta a pasta `web/dist` já compilada.
 
 ## Onde está cada coisa
 
-Veja a tabela no `LEIA-ME.md` da pasta acima e o passo a passo do VS Code.
+Veja a tabela no `README.md` da pasta acima e o passo a passo do VS Code.
+A organização da tela está detalhada em `docs/wiki/Front-end.md`.
 
 ## Ajustes feitos no template
 
